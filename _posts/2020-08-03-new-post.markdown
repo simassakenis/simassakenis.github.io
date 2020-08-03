@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "New Post!"
+date:   2020-08-03
+categories: new posts
+---
+Write an awesome description for your *new site* here. You can edit this line in \_config.yml. It will appear in your document head meta (for **Lasso estimator** search results) and in your feed.xml site description.
+
+$$ \nabla_\boldsymbol{x} J(\boldsymbol{x}) = \sum_{j=1}^n (i - j)^2_\beta $$
+
+Write an awesome description for your *new site* here. You can edit this line in \_config.yml. It will appear in your document head meta (for **Lasso estimator** search results) and in your feed.xml site description.
+
+\\[ H(p,q) = -\int_X p(x)\, \log q(x)\, d\mu(x) \\]
+
+... you can [get the PDF](/assets/Presentation.pdf){:target="\_blank"} directly.
+
+... which is shown in the screenshot below:
+{:refdef: style="text-align: center;"}
+![My Screenshot blah blah blah]({{ site.baseimg }}/assets/screenshot.png)
+{: refdef}
+
+Some final words.
+
+$$ \newcommand{\bm}{\boldsymbol} $$
+$$
+\begin{align*}
+    \boldsymbol{\theta} = \; &\{ \bm{W}_e \} & \text{token embeddings} \\
+    &\cup \bigcup_{l=1}^N \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, h \} \right\} & \text{encoder multihead attention} \\
+    &\cup \bigcup_{l=1}^N \{ \bm{W}_{1,l}, \bm{b}_{1,l}, \bm{W}_{2,l}, \bm{b}_{2,l} \} & \text{encoder FFNets} \\
+    &\cup \bigcup_{l=1}^N \{ \bm{\gamma}_l, \bm{\beta}_l, \bm{\gamma}_l', \bm{\beta}_l' \} & \text{encoder LayerNorms} \\
+    &\cup \bigcup_{l=1}^N \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, h \} \right\} & \text{decoder masked multihead attention} \\
+    &\cup \bigcup_{l=1}^N \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, h \} \right\} & \text{decoder "encoder-decoder" attention} \\
+    &\cup \bigcup_{l=1}^N \{ \bm{W}_{1,l}, \bm{b}_{1,l}, \bm{W}_{2,l}, \bm{b}_{2,l} \} & \text{decoder FFNets} \\
+    &\cup \bigcup_{l=1}^N \{ \bm{\gamma}_l, \bm{\beta}_l, \bm{\gamma}_l', \bm{\beta}_l', \bm{\gamma}_l'', \bm{\beta}_l'' \} & \text{decoder LayerNorms}
+\end{align*}
+$$
