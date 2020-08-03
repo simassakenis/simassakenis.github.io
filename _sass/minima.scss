@@ -77,19 +77,6 @@ $on-laptop:        800px !default;
     font-weight: bold;
     font-style: italic;
 }
-// New York font family
-@font-face {
-    font-family: "New York";
-    src: url('fonts/NewYork.ttf') format("truetype");
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: "New York";
-    src: url('fonts/NewYorkItalic.ttf') format("truetype");
-    font-weight: normal;
-    font-style: italic;
-}
 
 body {
     color: rgb(0, 0, 0);
