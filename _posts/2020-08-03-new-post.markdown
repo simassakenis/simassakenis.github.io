@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "New Post!"
-date:   2020-08-03
+date:   2020-08-03 21:44:56 +0300
 categories: new posts
 ---
 Write an awesome description for your *new site* here. You can edit this line in \_config.yml. It will appear in your document head meta (for **Lasso estimator** search results) and in your feed.xml site description.
