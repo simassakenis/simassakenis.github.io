@@ -19,7 +19,7 @@ Write an awesome description for your *new site* here. You can edit this line in
 ![My Screenshot blah blah blah]({{ site.baseimg }}/assets/screenshot2.png)
 {: refdef}
 
-Some final words.
+Some final words (words).
 
 $$ \newcommand{\bm}{\boldsymbol} $$
 $$
