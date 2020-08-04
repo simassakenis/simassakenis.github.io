@@ -80,9 +80,21 @@ $on-laptop:        800px !default;
 
 body {
     color: rgb(0, 0, 0);
-    font-family: "Computer Modern";
-    font-size: 18px;
+    // font-family: -apple-system-body, BlinkMacSystemFont, sans-serif;
+    // font-family: "Computer Modern";
+    font-family: "Lora", sans-serif;
+    font-size: 17px;
     background-color: rgb(245, 245, 245);
+}
+
+p {
+    font-family: "Computer Modern", serif;
+    font-size: 18px;
+}
+
+img {
+    border-radius: 5px;
+    // filter: drop-shadow(0px 0px 40px rgb(220, 220, 220));
 }
 
 .site-header {
