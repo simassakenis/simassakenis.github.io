@@ -55,42 +55,66 @@ $on-laptop:        800px !default;
 // Computer Modern font family
 @font-face {
     font-family: "Computer Modern";
-    src: url('fonts/cmunrm.ttf') format("truetype");
+    src: url('fonts/cmu/cmunrm.ttf') format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: "Computer Modern";
-    src: url('fonts/cmunbx.ttf') format("truetype");
+    src: url('fonts/cmu/cmunbx.ttf') format("truetype");
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: "Computer Modern";
-    src: url('fonts/cmunti.ttf') format("truetype");
+    src: url('fonts/cmu/cmunti.ttf') format("truetype");
     font-weight: normal;
     font-style: italic;
 }
 @font-face {
     font-family: "Computer Modern";
-    src: url('fonts/cmunbi.ttf') format("truetype");
+    src: url('fonts/cmu/cmunbi.ttf') format("truetype");
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Linux Libertine";
+    src: url('fonts/linux_libertine/LinLibertine_R.ttf') format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url('fonts/linux_libertine/LinLibertine_RB.ttf') format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url('fonts/linux_libertine/LinLibertine_RI.ttf') format("truetype");
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url('fonts/linux_libertine/LinLibertine_RBI.ttf') format("truetype");
     font-weight: bold;
     font-style: italic;
 }
 
 body {
-    color: rgb(0, 0, 0);
-    // font-family: -apple-system-body, BlinkMacSystemFont, sans-serif;
-    // font-family: "Computer Modern";
-    font-family: "Lora", sans-serif;
+    font-family: "Linux Libertine", sans-serif;
     font-size: 17px;
+    color: rgb(0, 0, 0);
     background-color: rgb(245, 245, 245);
 }
 
 ul, ol, dl, p {
-    // font-family: "Amari", serif;
-    font-family: "Computer Modern", serif;
-    font-size: 18px;
+    font-family: "Helvetica";
+    font-size: 16px;
+    line-height: 1.9;
+    color: rgb(40, 40, 40);
 }
 
 .MathJax_CHTML {
@@ -104,6 +128,10 @@ img {
 
 .site-header {
     border-top:none;
+}
+
+ul.post-list {
+    font-family: "Linux Libertine", sans-serif;
 }
 
 // .e-content {

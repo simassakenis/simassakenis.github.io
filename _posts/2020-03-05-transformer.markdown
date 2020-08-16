@@ -11,7 +11,7 @@ $$ \newcommand{\bm}{\boldsymbol} $$
 
 
 &nbsp;
-### **Definition**
+## Definition
 
 The Transformer is an encoder-decoder model for sequence-to-sequence tasks. That is, it takes a sequence of symbols as input, produces a sequence of continuous representations of those symbols using the encoder, and uses those representations to generate the output sequence one symbol at a time via the decoder. When generating the next symbol, the decoder has to receive not only the representations from the encoder but also the symbols it has already generated. Hence, the Transformer model actually always takes two sequences as input: the original input sequence and the unfinished output sequence. All symbols in these sequences are represented by their IDs in the specified vocabulary. The Transformer can thus be defined as a function
 
@@ -25,7 +25,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 
 &nbsp;
-### **Modules**
+## Modules
 
 - **One-Hot Encoding**: A function
 
@@ -133,7 +133,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 
 &nbsp;
-### **Forward pass**
+## Forward pass
 
 $$
 \begin{array}{@{}lll}
@@ -154,7 +154,7 @@ $$
 
 
 &nbsp;
-### **Parameters**
+## Parameters
 
 
 The set of all parameters in the Transformer is given by:
@@ -189,7 +189,7 @@ $$
 
 
 &nbsp;
-### **Hyperparameters**
+## Hyperparameters
 
 
 Positional encoding:
