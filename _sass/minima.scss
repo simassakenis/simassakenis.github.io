@@ -111,8 +111,9 @@ body {
 }
 
 ul, ol, dl, p {
-    font-family: "Helvetica";
-    font-size: 16px;
+    // font-family: "Helvetica";
+    font-family: "Computer Modern";
+    font-size: 17px;
     line-height: 1.9;
     color: rgb(40, 40, 40);
 }
@@ -132,6 +133,17 @@ img {
 
 ul.post-list {
     font-family: "Linux Libertine", sans-serif;
+}
+
+.boxed {
+    background: white;
+    color: black;
+    border: none;
+    margin-bottom: 30px;
+    width: auto;
+    padding: 10px;
+    padding-left: 30px;
+    border-radius: 20px;
 }
 
 // .e-content {

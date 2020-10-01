@@ -4,7 +4,7 @@ title:  "The Formulated Transfomer"
 date:   2020-08-05 15:44:56 +0300
 ---
 
-Motivation Motivation Motivation: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Motivation a Motivation Motivation: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 Short, self-contained, complete.
 $$ \newcommand{\bm}{\boldsymbol} $$
@@ -15,7 +15,7 @@ $$ \newcommand{\bm}{\boldsymbol} $$
 
 The Transformer is an encoder-decoder model for sequence-to-sequence tasks. That is, it takes a sequence of symbols as input, produces a sequence of continuous representations of those symbols using the encoder, and uses those representations to generate the output sequence one symbol at a time via the decoder. When generating the next symbol, the decoder has to receive not only the representations from the encoder but also the symbols it has already generated. Hence, the Transformer model actually always takes two sequences as input: the original input sequence and the unfinished output sequence. All symbols in these sequences are represented by their IDs in the specified vocabulary. The Transformer can thus be defined as a function
 
-$$ \text{Transformer} : \{ 1, 2, \ldots, s \}^n \times \{ 1, 2, \ldots, s \}^m \rightarrow [0, 1]^{m \times s} $$
+$$ \text{Transformer} : \{ 1, 2, \ldots, s \}^n \times \{ 1, 2, \ldots, s \}^m \to [0, 1]^{m \times s} $$
 
 where
 
@@ -27,9 +27,54 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 &nbsp;
 ## Modules
 
-- **One-Hot Encoding**: A function
+<div class="boxed">
+$$ \textbf{One-Hot Encoding} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{OneHot}(\bm{x})_{i,j} = \begin{cases} 1 & \text{if } j = x_i, \\ 0 & \text{otherwise}. \end{cases} \\
+    \text{Parameters:} &\hspace{10pt} \text{None}.
+\end{array}
+$$
+</div>
 
-    $$ \text{OneHot} : \{ 1, 2, \ldots, s \}^n \rightarrow \{ 0, 1 \}^{n \times d_\text{model}} $$
+<div class="boxed">
+$$ \textbf{Softmax} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Softmax} : \mathbb{R}^{n \times d_\text{model}} \to [0, 1]^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Softmax}(\bm{X})_{i,j} = \frac{e^{X_{i,j}}}{\sum_{k=1}^{d_\text{model}} e^{X_{i,k}}}. \\
+    \text{Parameters:} &\hspace{10pt} \text{None}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Scaled Dot-Product Attention} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{p \times d_k} \times \mathbb{R}^{p \times d_v} \to \mathbb{R}^{n \times d_v}. \\
+    \text{Definition:} &\hspace{10pt} \text{Attention}(\bm{Q}, \bm{K}, \bm{V}) = \text{Softmax}\left( \frac{\bm{Q} \bm{K}^\top}{\sqrt{d_k}} \right) \bm{V}. \\
+    \text{Parameters:} &\hspace{10pt} \text{None}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Autoregressive Attention Mask} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \text{Mask} : \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \text{Mask}(\bm{X})_{i,j} = \begin{cases} -\infty & \text{if } j > i, \\ X_{i,j} & \text{otherwise}. \end{cases}. \\
+    \text{Parameters:} &\hspace{10pt} \text{None}. \\
+    \text{Illustration:} &\hspace{10pt} \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}.
+\end{array}
+$$
+</div>
+
+<!-- - **One-Hot Encoding**: A function
+
+    $$ \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times d_\text{model}} $$
 
     defined by
 
@@ -37,7 +82,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Softmax**: A function
 
-    $$ \text{Softmax} : \mathbb{R}^{n \times d_\text{model}} \rightarrow [0, 1]^{n \times d_\text{model}} $$
+    $$ \text{Softmax} : \mathbb{R}^{n \times d_\text{model}} \to [0, 1]^{n \times d_\text{model}} $$
 
     defined by
 
@@ -45,7 +90,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Scaled Dot-Product Attention**: A function
 
-    $$ \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{p \times d_k} \times \mathbb{R}^{p \times d_v} \rightarrow \mathbb{R}^{n \times d_v} $$
+    $$ \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{p \times d_k} \times \mathbb{R}^{p \times d_v} \to \mathbb{R}^{n \times d_v} $$
 
     defined by
 
@@ -53,7 +98,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Autoregressive Attention Mask**: A function
 
-    $$ \text{Mask} : \mathbb{R}^{n \times n} \rightarrow \mathbb{R}^{n \times n} $$
+    $$ \text{Mask} : \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n} $$
 
     defined by
 
@@ -61,11 +106,11 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
     Illustration:
 
-    $$ \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}. $$
+    $$ \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}. $$ -->
 
 - **Masked Scaled Dot-Product Attention**: A function
 
-    $$ \text{MaskedAttention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_v} \rightarrow \mathbb{R}^{n \times d_v} $$
+    $$ \text{MaskedAttention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_v} \to \mathbb{R}^{n \times d_v} $$
 
     defined by
 
@@ -73,7 +118,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Concatenation**: A function
 
-    $$ \text{Concat} : \mathbb{R}^{n \times d_v} \times \cdots \times \mathbb{R}^{n \times d_v} \rightarrow \mathbb{R}^{n \times h d_v} $$
+    $$ \text{Concat} : \mathbb{R}^{n \times d_v} \times \cdots \times \mathbb{R}^{n \times d_v} \to \mathbb{R}^{n \times h d_v} $$
 
     defined by
 
@@ -85,7 +130,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Multi-Head Attention**: A function
 
-    $$ \text{MultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \rightarrow \mathbb{R}^{n \times d_\text{model}} $$
+    $$ \text{MultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}} $$
 
     defined by
 
@@ -97,7 +142,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Masked Multi-Head Attention**: A function
 
-    $$ \text{MaskedMultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \rightarrow \mathbb{R}^{n \times d_\text{model}} $$
+    $$ \text{MaskedMultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}} $$
 
     defined in the same way as $$ \text{MultiHead} $$ except that
 
@@ -105,7 +150,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Position-wise Feed-Forward Network**: A function
 
-    $$ \text{FFN} : \mathbb{R}^{n \times d_\text{model}} \rightarrow \mathbb{R}^{n \times d_\text{model}} $$
+    $$ \text{FFN} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}} $$
 
     defined by
 
@@ -115,7 +160,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Layer normalization**: A function
 
-    $$ \text{LayerNorm} : \mathbb{R}^{n \times d_\text{model}} \rightarrow \mathbb{R}^{n \times d_\text{model}} $$
+    $$ \text{LayerNorm} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}} $$
 
     defined by
 
@@ -125,7 +170,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 
 - **Cross Entropy**: A function
 
-    $$ \text{CrossEntropy} : [0, 1]^s \times [0, 1]^s \rightarrow \mathbb{R} $$
+    $$ \text{CrossEntropy} : [0, 1]^s \times [0, 1]^s \to \mathbb{R} $$
 
     defined by
 
