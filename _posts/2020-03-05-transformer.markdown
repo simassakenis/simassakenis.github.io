@@ -4,7 +4,7 @@ title:  "The Formulated Transfomer"
 date:   2020-08-05 15:44:56 +0300
 ---
 
-Motivation a Motivation Motivation: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 Short, self-contained, complete.
 $$ \newcommand{\bm}{\boldsymbol} $$
@@ -274,7 +274,7 @@ $$
      \text{Encoder:} & \bm{X}_l' = \text{LayerNorm}(\bm{X}_{l-1} + \text{MultiHead}(\bm{X}_{l-1}, \bm{X}_{l-1}, \bm{X}_{l-1})), &\hspace{10pt} (n \times d_\text{model}) \\
      & \bm{X}_l = \text{LayerNorm}(\bm{X}_l' + \text{FFNet}(\bm{X}_l')) \quad \text{for } l = 1, \ldots, N. &\hspace{10pt} (n \times d_\text{model}) \\
      \text{Target:} & \bm{y} \in \{1, 2, \ldots, s\}^{m}. &\hspace{10pt} (m) \\
-     \text{Embedding:} & \bm{Y}_0 = \text{OneHot}(\bm{y}_{-m}) \bm{W}_e + \bm{W}_p. &\hspace{10pt} (m \times d_\text{model}) \\
+     \text{Embedding:} & \bm{Y}_0 = \text{OneHot}(\bm{y}) \bm{W}_e + \bm{W}_p. &\hspace{10pt} (m \times d_\text{model}) \\
      \text{Decoder:} & \bm{Y}_l' = \text{LayerNorm}(\bm{Y}_{l-1} + \text{MaskedMultiHead}(\bm{Y}_{l-1}, \bm{Y}_{l-1}, \bm{Y}_{l-1})), &\hspace{10pt} (m \times d_\text{model}) \\
      & \bm{Y}_l'' = \text{LayerNorm}(\bm{Y}_{l-1} + \text{MultiHead}(\bm{Y}_l', \bm{X}_N, \bm{X}_N)), &\hspace{10pt} (m \times d_\text{model}) \\
      & \bm{Y}_l = \text{LayerNorm}(\bm{Y}_l'' + \text{FFNet}(\bm{Y}_l'')) \quad \text{for } l = 1, \ldots, N. &\hspace{10pt} (m \times d_\text{model}) \\
