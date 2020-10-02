@@ -53,8 +53,8 @@ $$
 $$ \textbf{Scaled Dot-Product Attention} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{p \times d_k} \times \mathbb{R}^{p \times d_v} \to \mathbb{R}^{n \times d_v}. \\
-    \text{Definition:} &\hspace{10pt} \text{Attention}(\bm{Q}, \bm{K}, \bm{V}) = \text{Softmax}\left( \frac{\bm{Q} \bm{K}^\top}{\sqrt{d_k}} \right) \bm{V}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{p \times d_k} \times \mathbb{R}^{p \times d_v} \to \mathbb{R}^{n \times d_v}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Attention}(\bm{Q}, \bm{K}, \bm{V}) = \text{Softmax}\left( \frac{\bm{Q} \bm{K}^\top}{\sqrt{d_k}} \right) \bm{V}. \\
     \text{Parameters:} &\hspace{10pt} \text{None}.
 \end{array}
 $$
@@ -64,10 +64,97 @@ $$
 $$ \textbf{Autoregressive Attention Mask} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \text{Mask} : \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n}. \\
-    \text{Definition:} &\hspace{10pt} \text{Mask}(\bm{X})_{i,j} = \begin{cases} -\infty & \text{if } j > i, \\ X_{i,j} & \text{otherwise}. \end{cases}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Mask} : \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Mask}(\bm{X})_{i,j} = \begin{cases} -\infty & \text{if } j > i, \\ X_{i,j} & \text{otherwise}. \end{cases} \\
     \text{Parameters:} &\hspace{10pt} \text{None}. \\
-    \text{Illustration:} &\hspace{10pt} \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}.
+    \text{Illustration:} &\hspace{10pt} \displaystyle \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Masked Scaled Dot-Product Attention} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{MaskedAttention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_v} \to \mathbb{R}^{n \times d_v}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{MaskedAttention}(\bm{Q}, \bm{K}, \bm{V}) = \text{Softmax}\left( \frac{\text{Mask}\left(\bm{Q} \bm{K}^\top\right)}{\sqrt{d_k}} \right) \bm{V}. \\
+    \text{Parameters:} &\hspace{10pt} \text{None}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Concatenation} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Concat} : \mathbb{R}^{n \times d_v} \times \cdots \times \mathbb{R}^{n \times d_v} \to \mathbb{R}^{n \times h d_v}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Concat}(\bm{X}_1, \ldots, \bm{X}_h)_{:, (k-1) d_v + 1: k d_v} = \bm{X}_k \quad (k = 1, 2, \ldots, h). \\
+    \text{Parameters:} &\hspace{10pt} \text{None}. \\
+    \text{Illustration:} &\hspace{10pt} \displaystyle \text{Concat}\left( \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix}, \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix}, \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & \cdot & \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot & \cdot & \cdot \end{bmatrix}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Multi-Head Attention} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{MultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{MultiHead}(\bm{Q}, \bm{K}, \bm{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \bm{W}^{O}, \quad \text{where} \\
+    &\hspace{10pt} \displaystyle \text{head}_i = \text{Attention}(\bm{Q} \bm{W}_i^{Q}, \bm{K} \bm{W}_i^{K}, \bm{V} \bm{W}_i^{V}). \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{d_\text{model} \times d_v} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}^{O} \in \mathbb{R}^{h d_v \times d_\text{model}}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Masked Multi-Head Attention} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{MaskedMultiHead} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{MaskedMultiHead}(\bm{Q}, \bm{K}, \bm{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \bm{W}^{O}, \quad \text{where} \\
+    &\hspace{10pt} \displaystyle \text{head}_i = \text{MaskedAttention}(\bm{Q} \bm{W}_i^{Q}, \bm{K} \bm{W}_i^{K}, \bm{V} \bm{W}_i^{V}). \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{d_\text{model} \times d_v} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
+    &\hspace{10pt} \displaystyle \bm{W}^{O} \in \mathbb{R}^{h d_v \times d_\text{model}}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Position-wise Feed-Forward Network} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}(\bm{X}) = \text{max}(0, \bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2. \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{d_\text{model} \times d_\text{ff}}, \; \bm{b}_1 \in \mathbb{R}^{d_\text{ff}}, \; \bm{W}_2 \in \mathbb{R}^{d_\text{ff} \times d_\text{model}}, \; \bm{b}_2 \in \mathbb{R}^{d_\text{model}}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Layer normalization} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{LayerNorm} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{LayerNorm}(\bm{X})_{i,j} = \gamma_j \left( \frac{X_{i,j} - \mu_i}{\sqrt{\sigma_i^2 + \epsilon}} \right) + \beta_j, \quad \text{where} \\
+    &\hspace{10pt} \displaystyle \mu_i = \frac{1}{d_\text{model}} \sum_{j=1}^{d_\text{model}} X_{i,j}, \quad \sigma_i^2 = \frac{1}{d_\text{model}} \sum_{j=1}^{d_\text{model}} (X_{i,j} - \mu_i)^2. \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{\gamma} \in \mathbb{R}^{d_\text{model}}, \; \bm{\beta} \in \mathbb{R}^{d_\text{model}}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Cross Entropy} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{CrossEntropy} : [0, 1]^s \times [0, 1]^s \to \mathbb{R}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{CrossEntropy}(\bm{y}, \hat{\bm{y}}) = - \sum_{j=1}^s y_j \log (\hat{y}_j). \\
+    \text{Parameters:} &\hspace{10pt} \text{None}.
 \end{array}
 $$
 </div>
@@ -106,7 +193,7 @@ $$
 
     Illustration:
 
-    $$ \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}. $$ -->
+    $$ \text{Mask}\left( \begin{bmatrix} \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & -\infty & -\infty & -\infty \\ \cdot & \cdot & -\infty & -\infty \\ \cdot & \cdot & \cdot & -\infty \\ \cdot & \cdot & \cdot & \cdot \end{bmatrix}. $$
 
 - **Masked Scaled Dot-Product Attention**: A function
 
@@ -174,7 +261,7 @@ $$
 
     defined by
 
-    $$ \text{CrossEntropy}(\bm{y}, \hat{\bm{y}}) = - \sum_{j=1}^s y_j \log (\hat{y}_j). $$
+    $$ \text{CrossEntropy}(\bm{y}, \hat{\bm{y}}) = - \sum_{j=1}^s y_j \log (\hat{y}_j). $$ -->
 
 
 &nbsp;
