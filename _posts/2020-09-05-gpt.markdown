@@ -152,7 +152,7 @@ $$
      \text{Layers:} & \bm{X}_l' = \text{LayerNorm}(\bm{X}_{l-1} + \text{MaskedMultiHead}(\bm{X}_{l-1}, \bm{X}_{l-1}, \bm{X}_{l-1})), &\hspace{10pt} (n \times d_\text{model}) \\
      & \bm{X}_l = \text{LayerNorm}(\bm{X}_l' + \text{FFNet}(\bm{X}_l')) \quad \text{for } l = 1, \ldots, N. &\hspace{10pt} (n \times d_\text{model}) \\
      \text{Output:} & \bm{Y} = \text{Softmax}\left( \bm{X}_N \bm{W}_e^\top \right). &\hspace{10pt} (n \times s) \\
-     \text{Loss:} & \text{loss} = \sum_{j=2}^{n} \text{CrossEntropy}(\text{OneHot}(y_j), \bm{Y}_{j-1,:}). \\
+     \text{Loss:} & \text{loss} = \sum_{j=2}^{n} \text{CrossEntropy}(\text{OneHot}(x_j), \bm{Y}_{j-1,:}). \\
      \text{Prediction:} & x_{n+1} \sim \bm{Y}_{n,:}.
 \end{array}
 $$
