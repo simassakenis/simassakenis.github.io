@@ -111,7 +111,8 @@ $$
 \begin{array}{ll}
     \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU}(\bm{X}) = \text{GELU}(\bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2, \quad \text{where} \\
-    &\hspace{10pt} \displaystyle \text{GELU}(\bm{X}) = \bm{X} \odot  \text{sigmoid}(1.702 \bm{X}). \\
+    &\hspace{10pt} \displaystyle \text{GELU}(\bm{X}) = \bm{X} \odot  \text{sigmoid}(1.702 \bm{X}), \quad \text{and} \\
+    &\hspace{10pt} \displaystyle \text{sigmoid}(x) = \frac{1}{1 + e^{-x}}. \\
     \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{d_\text{model} \times d_\text{ff}}, \; \bm{b}_1 \in \mathbb{R}^{d_\text{ff}}, \; \bm{W}_2 \in \mathbb{R}^{d_\text{ff} \times d_\text{model}}, \; \bm{b}_2 \in \mathbb{R}^{d_\text{model}}.
 \end{array}
 $$
