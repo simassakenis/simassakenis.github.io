@@ -31,7 +31,7 @@ Here, $$ n $$ is the length of the input sequence, $$ m $$ is the length of the 
 $$ \textbf{One-Hot Encoding} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times s}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{OneHot}(\bm{x})_{i,j} = \begin{cases} 1 & \text{if } j = x_i, \\ 0 & \text{otherwise}. \end{cases} \\
     \text{Parameters:} &\hspace{10pt} \text{None}.
 \end{array}

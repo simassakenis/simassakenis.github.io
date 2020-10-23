@@ -23,12 +23,20 @@ $$ \text{GPT}(\bm{x})_{i, j} = P(x_{i+1} = j \mid x_1, \ldots, x_i). $$
 
 Here, $$ n $$ is the length of the input sequence and $$ s $$ is the number of items in the vocabulary. In words, given a sequences $$ \bm{x} = (x_1, \ldots, x_n) $$, GPT outputs a matrix whose rows are probability mass functions $$ P(x_2 = j \mid x_1) $$, $$ P(x_3 = j \mid x_1, x_2) $$, ..., $$ P(x_{n+1} = j \mid x_1, \ldots, x_n) $$, where $$ j \in \{ 1, 2, \ldots, s \} $$.
 
-$$ \text{GPT}(\bm{x}) =
+<!-- $$ \text{GPT}(\bm{x}) =
 \begin{bmatrix}
     P(x_2 = 1 \mid x_1) & P(x_2 = 2 \mid x_1) & \cdots & P(x_2 = s \mid x_1) \\
     P(x_3 = 1 \mid x_1, x_2) & P(x_3 = 2 \mid x_1, x_2) & \cdots & P(x_3 = s \mid x_1, x_2) \\
     \vdots & \vdots & \vdots & \vdots \\
     P(x_{n+1} = 1 \mid x_1, \ldots, x_n) & P(x_{n+1} = 2 \mid x_1, \ldots, x_n) & \cdots & P(x_{n+1} = s \mid x_1, \ldots, x_n)
+\end{bmatrix} $$ -->
+
+$$ \text{GPT}(\bm{x}) =
+\begin{bmatrix}
+    \rule[.5ex]{8ex}{0.5pt} & P(x_2 \mid x_1) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P(x_3 \mid x_1, x_2) & \rule[.5ex]{8ex}{0.5pt} \\
+    & \vdots & \\
+    \rule[.5ex]{8ex}{1pt} & P(x_{n+1} \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
 \end{bmatrix} $$
 
 
@@ -39,7 +47,7 @@ $$ \text{GPT}(\bm{x}) =
 $$ \textbf{One-Hot Encoding} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times s}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{OneHot}(\bm{x})_{i,j} = \begin{cases} 1 & \text{if } j = x_i, \\ 0 & \text{otherwise}. \end{cases} \\
     \text{Parameters:} &\hspace{10pt} \text{None}.
 \end{array}
