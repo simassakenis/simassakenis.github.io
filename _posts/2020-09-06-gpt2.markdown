@@ -7,31 +7,41 @@ date:   2020-10-22 15:44:56 +0300
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 Short, self-contained, complete.
-$$ \newcommand{\bm}{\boldsymbol} $$
-
-
-<!-- &nbsp;
-## Definition
-
-The Generative Pre-trained Transformer (GPT) is a model for next-symbol prediction. That is, it takes a sequence of symbols as input and outputs a probability distribution for the next symbol given that sequence. All symbols are represented by their IDs in the specified vocabulary. GPT can thus be defined as a function
-
-$$ \text{GPT} : \{ 1, 2, \ldots, s \}^n \to [0, 1]^s $$
-
-such that
-
-$$ \text{GPT}(\bm{x})_j = P(x_{n+1} = j \mid x_1, \ldots, x_n), $$
-
-where $$ \bm{x} = (x_1, \ldots, x_n) $$ is the input sequence and $$ \{ 1, 2, \ldots, s \} $$ is the set of vocabulary IDs. -->
+$$
+\newcommand{\bm}{\boldsymbol}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+$$
 
 
 &nbsp;
 ## Modules
 
 <div class="boxed">
+$$ \textbf{Diagonal Matrix} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{diag} : \mathbb{R}^n \to \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{diag}(\bm{x})_{i,j} = \begin{cases} x_i & \text{if } i = j, \\ 0 & \text{otherwise}. \end{cases}
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Stack} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Stack}_n : \mathbb{R}^H \to \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Stack}_n(\bm{x})_{i,j} = x_j.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
 $$ \textbf{One-Hot Encoding} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, s \}^n \to \{ 0, 1 \}^{n \times s}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{OneHot} : \{ 1, 2, \ldots, V \}^n \to \{ 0, 1 \}^{n \times V}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{OneHot}(\bm{x})_{i,j} = \begin{cases} 1 & \text{if } j = x_i, \\ 0 & \text{otherwise}. \end{cases}
 \end{array}
 $$
@@ -41,8 +51,18 @@ $$
 $$ \textbf{Softmax} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{Softmax} : \mathbb{R}^{n \times d_\text{model}} \to [0, 1]^{n \times d_\text{model}}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{Softmax}(\bm{X})_{i,j} = \frac{e^{X_{i,j}}}{\sum_{k=1}^{d_\text{model}} e^{X_{i,k}}}.
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Softmax} : \mathbb{R}^{n \times H} \to [0, 1]^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Softmax}(\bm{X})_{i,j} = \frac{e^{X_{i,j}}}{\sum_{k=1}^{H} e^{X_{i,k}}}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Bidirectional Attention Mask} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Mask}_\text{BD} \in \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle (\text{Mask}_\text{BD})_{i,j} = 1
 \end{array}
 $$
 </div>
@@ -62,8 +82,8 @@ $$
 $$ \textbf{Masked Scaled Dot-Product Attention} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_v} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times d_v}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{Attention}(\bm{Q}, \bm{K}, \bm{V}, \text{Mask}) = \text{Softmax}\left( \frac{\text{Mask} \odot \bm{Q} \bm{K}^\top}{\sqrt{d_k}} \right) \bm{V}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Attention} : \mathbb{R}^{n \times D} \times \mathbb{R}^{n \times D} \times \mathbb{R}^{n \times D} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times D}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Attention}(\bm{Q}, \bm{K}, \bm{V}, \text{Mask}) = \text{Softmax}\left( \frac{\text{Mask} \odot \bm{Q} \bm{K}^\top}{\sqrt{D}} \right) \bm{V}. \\
 \end{array}
 $$
 </div>
@@ -72,8 +92,8 @@ $$
 $$ \textbf{Concatenation} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{Concat} : \mathbb{R}^{n \times d_v} \times \cdots \times \mathbb{R}^{n \times d_v} \to \mathbb{R}^{n \times h d_v}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{Concat}(\bm{X}_1, \ldots, \bm{X}_h)_{:, (k-1) d_v + 1: k d_v} = \bm{X}_k \quad (k = 1, 2, \ldots, h). \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Concat} : \mathbb{R}^{n \times D} \times \cdots \times \mathbb{R}^{n \times D} \to \mathbb{R}^{n \times AD}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Concat}(\bm{X}_1, \ldots, \bm{X}_h)_{:, (k-1) D + 1: k D} = \bm{X}_k \quad (k = 1, 2, \ldots, A). \\
     \text{Illustration:} &\hspace{10pt} \displaystyle \text{Concat}\left( \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix}, \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix}, \begin{bmatrix} \cdot & \cdot \\ \cdot & \cdot \end{bmatrix} \right) = \begin{bmatrix} \cdot & \cdot & \cdot & \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot & \cdot & \cdot & \cdot \end{bmatrix}.
 \end{array}
 $$
@@ -83,13 +103,13 @@ $$
 $$ \textbf{Masked Multi-Head Self-Attention} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{MultiHeadSA} : \mathbb{R}^{n \times d_\text{model}} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{MultiHeadSA} : \mathbb{R}^{n \times H} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times H}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{MultiHeadSA}(\bm{X}, \text{Mask}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \bm{W}^{O}, \quad \text{where} \\
     &\hspace{10pt} \displaystyle \text{head}_i = \text{Attention}(\bm{X} \bm{W}_i^{Q}, \bm{X} \bm{W}_i^{K}, \bm{X} \bm{W}_i^{V}, \text{Mask}). \\
-    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
-    &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{d_\text{model} \times d_k} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
-    &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{d_\text{model} \times d_v} \quad \text{for } i \in \{ 1, 2, \ldots, h \}, \\
-    &\hspace{10pt} \displaystyle \bm{W}^{O} \in \mathbb{R}^{h d_v \times d_\text{model}}.
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}^{O} \in \mathbb{R}^{AD \times H}.
 \end{array}
 $$
 </div>
@@ -98,9 +118,9 @@ $$
 $$ \textbf{Feed-Forward ReLU Network} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{ReLU} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{ReLU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}_\text{ReLU}(\bm{X}) = \text{max}(0, \bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2. \\
-    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{d_\text{model} \times d_\text{ff}}, \; \bm{b}_1 \in \mathbb{R}^{d_\text{ff}}, \; \bm{W}_2 \in \mathbb{R}^{d_\text{ff} \times d_\text{model}}, \; \bm{b}_2 \in \mathbb{R}^{d_\text{model}}.
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{H \times F}, \; \bm{b}_1 \in \mathbb{R}^{F}, \; \bm{W}_2 \in \mathbb{R}^{F \times H}, \; \bm{b}_2 \in \mathbb{R}^{H}.
 \end{array}
 $$
 </div>
@@ -109,11 +129,11 @@ $$
 $$ \textbf{Feed-Forward GELU Network} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU}(\bm{X}) = \text{GELU}(\bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2, \quad \text{where} \\
     &\hspace{10pt} \displaystyle \text{GELU}(\bm{X}) = \bm{X} \odot  \text{sigmoid}(1.702 \bm{X}), \quad \text{and} \\
     &\hspace{10pt} \displaystyle \text{sigmoid}(x) = \frac{1}{1 + e^{-x}}. \\
-    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{d_\text{model} \times d_\text{ff}}, \; \bm{b}_1 \in \mathbb{R}^{d_\text{ff}}, \; \bm{W}_2 \in \mathbb{R}^{d_\text{ff} \times d_\text{model}}, \; \bm{b}_2 \in \mathbb{R}^{d_\text{model}}.
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{H \times F}, \; \bm{b}_1 \in \mathbb{R}^{F}, \; \bm{W}_2 \in \mathbb{R}^{F \times H}, \; \bm{b}_2 \in \mathbb{R}^{H}.
 \end{array}
 $$
 </div>
@@ -122,10 +142,10 @@ $$
 $$ \textbf{Layer normalization} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{LayerNorm} : \mathbb{R}^{n \times d_\text{model}} \to \mathbb{R}^{n \times d_\text{model}}. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{LayerNorm} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
     \text{Definition:} &\hspace{10pt} \displaystyle \text{LayerNorm}(\bm{X})_{i,j} = \gamma_j \left( \frac{X_{i,j} - \mu_i}{\sqrt{\sigma_i^2 + \epsilon}} \right) + \beta_j, \quad \text{where} \\
-    &\hspace{10pt} \displaystyle \mu_i = \frac{1}{d_\text{model}} \sum_{j=1}^{d_\text{model}} X_{i,j}, \quad \sigma_i^2 = \frac{1}{d_\text{model}} \sum_{j=1}^{d_\text{model}} (X_{i,j} - \mu_i)^2. \\
-    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{\gamma} \in \mathbb{R}^{d_\text{model}}, \; \bm{\beta} \in \mathbb{R}^{d_\text{model}}.
+    &\hspace{10pt} \displaystyle \mu_i = \frac{1}{H} \sum_{j=1}^{H} X_{i,j}, \quad \sigma_i^2 = \frac{1}{H} \sum_{j=1}^{H} (X_{i,j} - \mu_i)^2. \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{\gamma} \in \mathbb{R}^{H}, \; \bm{\beta} \in \mathbb{R}^{H}.
 \end{array}
 $$
 </div>
@@ -134,8 +154,8 @@ $$
 $$ \textbf{Cross Entropy} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{CrossEntropy} : [0, 1]^s \times [0, 1]^s \to \mathbb{R}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{CrossEntropy}(\bm{y}, \hat{\bm{y}}) = - \sum_{j=1}^s y_j \log (\hat{y}_j). \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{CrossEntropy} : [0, 1]^{V} \times [0, 1]^{V} \to \mathbb{R}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{CrossEntropy}(\bm{y}, \hat{\bm{y}}) = - \sum_{j=1}^{V} y_j \log (\hat{y}_j). \\
 \end{array}
 $$
 </div>
@@ -144,26 +164,18 @@ $$
 &nbsp;
 ## Definition
 
-The Generative Pre-trained Transformer (GPT) is a model for next-symbol prediction. That is, it takes a sequence of symbols as input and outputs a probability distribution for the next symbol given that sequence. Each symbol is represented by a number from $$ \{ 1, 2, \ldots, s \} $$, corresponding to its ID in a pre-specified vocabulary consisting of $$ s $$ items. The input to the GPT is thus a sequence of $$ n $$ numbers $$ \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, s\}^{n} $$, and the output is a sequence of $$ s $$ numbers $$ \text{GPT}(\bm{x}) \in [0, 1]^s $$ giving the probabilities for each vocabulary item being the next symbol in the sequence. GPT can thus be defined as a function $$ \text{GPT} : \{ 1, 2, \ldots, s \}^n \to [0, 1]^s $$ that maps inputs to outputs by performing the following computations:
-
-<!-- $$ \text{GPT} : \{ 1, 2, \ldots, s \}^n \to [0, 1]^s $$
-
-such that
-
-$$ \text{GPT}(\bm{x})_j = P(x_{n+1} = j \mid x_1, \ldots, x_n), $$
-
-where $$ \bm{x} = (x_1, \ldots, x_n) $$ is the input sequence and $$ \{ 1, 2, \ldots, s \} $$ is the set of vocabulary IDs. -->
+The Generative Pre-trained Transformer (GPT) is a model for next-symbol prediction. That is, it takes a sequence of symbols as input and outputs a probability distribution for the next symbol given that sequence. Each symbol is represented by a number from $$ \{ 1, 2, \ldots, V \} $$, corresponding to its ID in a pre-specified vocabulary consisting of $$ s $$ items. The input to the GPT is thus a sequence of $$ n $$ numbers $$ \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^n $$, and the output is a sequence of $$ V $$ numbers $$ \text{GPT}(\bm{x}) \in [0, 1]^{V} $$ giving the probabilities for each vocabulary item being the next symbol in the sequence. GPT can thus be defined as a function $$ \text{GPT} : \{ 1, 2, \ldots, V \}^n \to [0, 1]^{V} $$ that maps inputs to outputs by performing the following computations:
 
 <div class="boxed">
 $$ \textbf{GPT} $$
 $$
 \begin{array}{@{}lll}
-     \text{Input} & \bm{x} \in \{1, 2, \ldots, s\}^{n} &\hspace{10pt} (n) \\
-     \text{Embedding} & \bm{X}_0 = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times d_\text{model}) \\
-     \text{Layers} & \bm{X}_l' = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}_{l-1}, \text{Mask}_\text{AR}) + \bm{X}_{l-1}), &\hspace{10pt} (n \times d_\text{model}) \\
-     & \bm{X}_l = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}_l') + \bm{X}_l') \quad \text{for } l = 1, \ldots, N &\hspace{10pt} (n \times d_\text{model}) \\
-     \text{De-embed.} & \bm{Y} = \text{Softmax}\left( \bm{X}_N \bm{W}_e^\top \right) &\hspace{10pt} (n \times s) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \bm{Y}_{n,:} &\hspace{10pt} (s)
+     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     \text{Embedding} & \bm{X}_0 = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}_l' = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}_{l-1}, \text{Mask}_\text{AR}) + \bm{X}_{l-1}), &\hspace{10pt} (n \times H) \\
+     & \bm{X}_l = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}_l') + \bm{X}_l') \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{De-embed.} & \bm{Y} = \text{Softmax}\left( \bm{X}_{L} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V) \\
+     \text{Output} & \text{GPT}(\bm{x}) = \bm{Y}_{n,:} &\hspace{10pt} (V)
 \end{array}
 $$
 </div>
@@ -172,29 +184,69 @@ $$
 $$ \textbf{GPT-2} $$
 $$
 \begin{array}{@{}lll}
-     \text{Input} & \bm{x} \in \{1, 2, \ldots, s\}^{n} &\hspace{10pt} (n) \\
-     \text{Embedding} & \bm{X}_0 = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times d_\text{model}) \\
-     \text{Layers} & \bm{X}_l' = \text{MultiHeadSA}(\text{LayerNorm}(\bm{X}_{l-1}), \text{Mask}_\text{AR}) + \bm{X}_{l-1}, &\hspace{10pt} (n \times d_\text{model}) \\
-     & \bm{X}_l = \text{FFN}_\text{GELU}(\text{LayerNorm}(\bm{X}_l')) + \bm{X}_l' \quad \text{for } l = 1, \ldots, N &\hspace{10pt} (n \times d_\text{model}) \\
-     \text{De-embed.} & \bm{Y} = \text{Softmax}\left( \text{LayerNorm}(\bm{X}_N) \bm{W}_e^\top \right) &\hspace{10pt} (n \times s) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \bm{Y}_{n,:} &\hspace{10pt} (s)
+     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     \text{Embedding} & \bm{X}_0 = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}_l' = \text{MultiHeadSA}(\text{LayerNorm}(\bm{X}_{l-1}), \text{Mask}_\text{AR}) + \bm{X}_{l-1}, &\hspace{10pt} (n \times H) \\
+     & \bm{X}_l = \text{FFN}_\text{GELU}(\text{LayerNorm}(\bm{X}_l')) + \bm{X}_l' \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
+     \text{De-embed.} & \bm{Y} = \text{Softmax}\left( \text{LayerNorm}(\bm{X}_{L}) \bm{W}_e^\top \right) &\hspace{10pt} (n \times V) \\
+     \text{Output} & \text{GPT}(\bm{x}) = \bm{Y}_{n,:} &\hspace{10pt} (V)
 \end{array}
 $$
 </div>
 
-Here, $$ \bm{W}_e \in \mathbb{R}^{s \times d_\text{model}} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times d_\text{model}} $$ are the learned embedding and positional encoding matrices, $$ \bm{X}_0 $$ is the embedding of the input sequence, $$ \bm{X}_1, \ldots, \bm{X}_N $$ are the hidden layer representations, and $$ \bm{Y} $$ is the matrix whose rows are interpreted as the conditional next-symbol probability distributions for subsequences of the input:
+Here, $$ \bm{W}_e \in \mathbb{R}^{V \times H} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times H} $$ are the learned embedding and positional encoding matrices, $$ \bm{X}_0 $$ is the embedding of the input sequence, $$ \bm{X}_1, \ldots, \bm{X}_{L} $$ are the hidden layer representations, and $$ \bm{Y} $$ is the matrix whose rows are interpreted as the conditional next-symbol probability distributions for subsequences of the input:
 
-$$ Y =
+$$ \bm{Y} =
 \begin{bmatrix}
-    \rule[.5ex]{8ex}{0.5pt} & P(x_2 \mid x_1) & \rule[.5ex]{8ex}{0.5pt} \\
-    \rule[.5ex]{8ex}{0.5pt} & P(x_3 \mid x_1, x_2) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_2 \mid x_1) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_3 \mid x_1, x_2) & \rule[.5ex]{8ex}{0.5pt} \\
     & \vdots & \\
-    \rule[.5ex]{8ex}{1pt} & P(x_{n+1} \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
+    \rule[.5ex]{8ex}{1pt} & P_\theta(x_{n+1} \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
 \end{bmatrix}. $$
 
-The language modeling loss for the whole sequence can thus be computed by:
+The training objective is to maximize the likelihood of the input sequence:
 
-$$ \text{loss} = \sum_{j=2}^{n} \text{CrossEntropy}(\text{OneHot}(x_j), \bm{Y}_{j-1,:}). $$
+$$ \text{loss} = - \log{P(x_2 \ldots, x_n \mid x_1)} = - \sum_{j=2}^n P(x_j \mid x_1, \ldots, x_{j-1}) = - \sum_{j=2}^n Y_{j-1, x_j} . $$
+
+$$
+\begin{align*}
+    \theta^* &= \argmax_\theta P_\theta(\mathbf{x}) \\
+    &= \argmax_\theta \log{P_\theta(x_2 \ldots, x_n \mid x_1)} \\
+    &= \argmax_\theta \sum_{j=2}^n P_\theta(x_j \mid x_1, \ldots, x_{j-1}) \\
+    &= \argmax_\theta \sum_{j=2}^n Y_{j-1, x_j} .
+\end{align*}
+$$
+
+$$ \bm{Y} =
+\begin{bmatrix}
+    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_1 \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_2 \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{0.5pt} \\
+    & \vdots & \\
+    \rule[.5ex]{8ex}{1pt} & P_\theta(x_n \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
+\end{bmatrix}. $$
+
+
+&nbsp;
+## BERT
+
+
+<div class="boxed">
+$$ \textbf{BERT} $$
+$$
+\begin{array}{@{}lll}
+     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     & \bm{t} = (t_1, \ldots, t_n) \in \{0, 1\}^{n} &\hspace{10pt} (n) \\
+     & j_\text{masked}  \in \{1, 2, \ldots, n\} &\hspace{10pt} (1) \\
+     \text{Embedding} & \bm{X}_0 = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     &\bm{X}_0 = \bm{X}_0 + \text{diag}(\bm{t}) \text{Stack}_n(\bm{w}_A) + \text{diag}(1 - \bm{t}) \text{Stack}_n(\bm{w}_B) &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}_l' = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}_{l-1}, \text{Mask}_\text{BD}) + \bm{X}_{l-1}), &\hspace{10pt} (n \times H) \\
+     & \bm{X}_l = \text{LayerNorm}(\text{FFN}_\text{RELU}(\bm{X}_l') + \bm{X}_l') \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
+     \text{De-embed.} & \bm{Y} = \text{Softmax}\left( \bm{X}_{L} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V) \\
+     \text{Output} & \text{GPT}(\bm{x}) = \bm{Y}_{j_\text{masked},:} &\hspace{10pt} (V)
+\end{array}
+$$
+</div>
+
 
 
 &nbsp;
@@ -205,10 +257,10 @@ The set of all parameters in the GPT is given by:
 
 $$
 \begin{align*}
-    \bm{\Theta} = \; &\{ \bm{W}_e, \bm{W}_p \} & \text{embeddings} \\
-    &\cup \bigcup_{l=1}^N \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, h \} \right\} & \text{MaskedMultiHeads} \\
-    &\cup \bigcup_{l=1}^N \{ \bm{W}_{1,l}, \bm{b}_{1,l}, \bm{W}_{2,l}, \bm{b}_{2,l} \} & \text{FFNets} \\
-    &\cup \bigcup_{l=1}^N \{ \bm{\gamma}_l, \bm{\beta}_l, \bm{\gamma}_l', \bm{\beta}_l' \} & \text{LayerNorms}.
+    \theta = \; &\{ \bm{W}_e, \bm{W}_p \} & \text{embeddings} \\
+    &\cup \bigcup_{l=1}^{L} \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, A\} \right\} & \text{MultiHeadSAs} \\
+    &\cup \bigcup_{l=1}^{L} \{ \bm{W}_{1,l}, \bm{b}_{1,l}, \bm{W}_{2,l}, \bm{b}_{2,l} \} & \text{FFNets} \\
+    &\cup \bigcup_{l=1}^{L} \{ \bm{\gamma}_l, \bm{\beta}_l, \bm{\gamma}_l', \bm{\beta}_l' \} & \text{LayerNorms}.
 \end{align*}
 $$
 
@@ -216,10 +268,10 @@ Correspondingly, the total number of parameters in the Transformer is
 
 $$
 \begin{align*}
-    \lambda = &\; s \cdot d_\text{model} + n \cdot d_\text{model} & \text{embeddings} \\
-    &+ N \cdot ( h \cdot (d_\text{model} \cdot d_k + d_\text{model} \cdot d_k + d_\text{model} \cdot d_v) + h d_v \cdot d_\text{model} ) & \text{MaskedMultiHeads} \\
-    &+ N \cdot ( d_\text{model} \cdot d_\text{ff} + d_\text{ff} + d_\text{ff} \cdot d_\text{model} + d_\text{model} ) & \text{FFNets} \\
-    &+ N \cdot ( d_\text{model} + d_\text{model} + d_\text{model} + d_\text{model} ). & \text{LayerNorms}
+    \lambda = &\; V \cdot H + n \cdot H & \text{embeddings} \\
+    &+ L \cdot ( A\cdot (H \cdot D + H \cdot D + H \cdot D) + AD \cdot H ) & \text{MultiHeadSAs} \\
+    &+ L \cdot ( H \cdot F + F + F \cdot H + H ) & \text{FFNets} \\
+    &+ L \cdot ( H + H + H + H ). & \text{LayerNorms}
 \end{align*}
 $$
 
@@ -232,7 +284,7 @@ Vocabulary:
 
 $$
 \begin{align*}
-    s &= 40\,478 & \text{byte-pair encoding.}
+    V &= 40\,478 & \text{byte-pair encoding.}
 \end{align*}
 $$
 
@@ -249,12 +301,12 @@ Hyperparameter values (used in the paper):
 
 $$
 \begin{align*}
-    & d_\text{model} = 768 & \text{dimension of vector representations inside the model} \\
-    & d_\text{ff} = 3072 & \text{dimension of the hidden layer in feed-forward nets} \\
-    & d_k = 64 & \text{dimension of the vector space for queries and keys} \\
-    & d_v = 64 & \text{dimension of the vector space for values} \\
-    & h = 12 & \text{number of heads in multihead attention} \\
-    & N = 12 & \text{number of layers} \\
+    & H = 768 & \text{dimension of the residual stream} \\
+    & F = 3072 & \text{dimension of the hidden layer in feed-forward nets} \\
+    & D = 64 & \text{dimension of the vector space for queries, keys, and values} \\
+    & L = 12 & \text{number of layers} \\
+    & A = 12 & \text{number of heads in multihead attention} \\
+    & V = 40\,478 & \text{number of items in the vocabulary} \\
     & n_\text{ctx} = 512 & \text{context size}
 \end{align*}
 $$
