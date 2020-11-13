@@ -198,26 +198,23 @@ $$
 $$
 </div>
 
-Here, $$ \bm{W}_e \in \mathbb{R}^{V \times H} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times H} $$ are the learned embedding and positional encoding matrices, $$ \bm{X}_0 $$ is the embedding of the input sequence, $$ \bm{X}_1, \ldots, \bm{X}_{L} $$ are the hidden layer representations, and $$ \bm{Y} $$ is the matrix whose rows are interpreted as the conditional next-symbol probability distributions for subsequences of the input:
+Here, $$ \bm{W}_e \in \mathbb{R}^{V \times H} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times H} $$ are the learned embedding and positional encoding matrices, $$ \bm{X}_0 $$ is the embedding of the input sequence, and $$ \bm{X}_1, \ldots, \bm{X}_{L} $$ are the hidden layer representations of the input sequence. Also, due to autoregressive masking, we have that
 
 $$ \text{Softmax}\left( \bm{X}^{(L)} \bm{W}_e^\top \right) =
 \begin{bmatrix}
-    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_2 \mid x_1) & \rule[.5ex]{8ex}{0.5pt} \\
-    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_3 \mid x_1, x_2) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P(X_2 \mid X_1 = x_1; \bm{\theta}) & \rule[.5ex]{8ex}{0.5pt} \\
+    \rule[.5ex]{8ex}{0.5pt} & P(X_3 \mid X_1 = x_1, X_2 = x_2; \bm{\theta}) & \rule[.5ex]{8ex}{0.5pt} \\
     & \vdots & \\
-    \rule[.5ex]{8ex}{1pt} & P_\theta(x_{n+1} \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
+    \rule[.5ex]{8ex}{1pt} & P(X_{n+1} \mid X_1 = x_1, \ldots, X_n = x_n; \bm{\theta}) & \rule[.5ex]{8ex}{1pt}
 \end{bmatrix}. $$
 
-The training objective is to maximize the likelihood of the input sequence:
-
-$$ \text{loss} = - \log{P(x_2 \ldots, x_n \mid x_1)} = - \sum_{j=2}^n P(x_j \mid x_1, \ldots, x_{j-1}) = - \sum_{j=2}^n Y_{j-1, x_j} . $$
+The training objective is to maximize the likelihood of observed data $$ (x_2, \ldots, x_n) $$ conditional on $$ X_1 = x_1 $$, which corresponds to minimizing the negative log-likelihood loss given by
 
 $$
 \begin{align*}
-    \theta^* &= \argmax_\theta P_\theta(\mathbf{x}) \\
-    &= \argmax_\theta \log{P_\theta(x_2 \ldots, x_n \mid x_1)} \\
-    &= \argmax_\theta \sum_{j=2}^n P_\theta(x_j \mid x_1, \ldots, x_{j-1}) \\
-    &= \argmax_\theta \sum_{j=2}^n Y_{j-1, x_j} .
+    \text{loss} &= - \log{P(X_2 = x_2, \ldots, X_n = x_n \mid X_1 = x_1; \bm{\theta})} \\
+    &= - \sum_{j=2}^n \log{P(X_j = x_j \mid X_1 = x_1, \ldots, X_{j-1} = x_{j-1}; \bm{\theta})} \\
+    &= - \sum_{j=2}^n \log\left( \text{Softmax}\left( \bm{X}_{j-1,:}^{(L)} \bm{W}_e^\top \right) \right).
 \end{align*}
 $$
 
@@ -226,29 +223,96 @@ $$
 ## BERT
 
 
+Given a pair of sentences $$ \bm{x}^A = (x_1^A, \ldots, x_{n_A}^A) $$ and $$ \bm{x}^B = (x_1^B, \ldots, x_{n_B}^B) $$, and an index $$ j^\text{masked} $$ at which to mask a token, let
+
+$$ \bm{x} = (i^\text{cls}, x_1^A, \ldots, x_{n_A}^A, i^\text{sep}, x_1^B, \ldots, x_{n_B}^B, i^\text{sep} ) $$
+
+and $$ \bm{x}' = (x'_1, \ldots, x'_n) $$ such that
+
+$$ x'_i = \begin{cases} i^\text{mask} & \text{if } i = j^\text{masked}, \\ x_i & \text{otherwise}, \end{cases} $$
+
+where $$ i^\text{cls} $$, $$ i^\text{sep} $$, and $$ i^\text{mask} $$ are the vocabulary indices of the classifier ($$ \texttt{[CLS]} $$), separator ($$ \texttt{[SEP]} $$), and mask ($$ \texttt{[MASK]} $$) tokens, and $$ n = n_A + n_B + 3 $$. The sequence $$ \bm{t} = (t_1, \ldots, t_n) $$ of token IDs (indicating which of the two input sentences each token belongs to) is then given by
+
+$$ t_i = \begin{cases} 0 & \text{if } i \leq n_A + 2, \\ 1 & \text{otherwise}. \end{cases} $$
+
 <div class="boxed">
 $$ \textbf{BERT} $$
 $$
 \begin{array}{@{}lll}
-     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     \text{Input} & \bm{x}' = (x'_1, \ldots, x'_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
      & \bm{t} = (t_1, \ldots, t_n) \in \{0, 1\}^{n} &\hspace{10pt} (n) \\
-     & j_\text{masked}  \in \{1, 2, \ldots, n\} &\hspace{10pt} (1) \\
-     \text{Embedding} & \bm{X}'^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
-     &\bm{X}^{(0)} = \bm{X}'^{(0)} + \text{diag}(\bm{t}) \text{Stack}_n(\bm{w}_A) + \text{diag}(1 - \bm{t}) \text{Stack}_n(\bm{w}_B) &\hspace{10pt} (n \times H) \\
+     & j^\text{masked} \in \{1, 2, \ldots, n_A + n_B\} &\hspace{10pt} (1) \\
+     \text{Embedding} & \bm{X}'^{(0)} = \text{OneHot}(\bm{x}') \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     &\bm{X}^{(0)} = \bm{X}'^{(0)} + \text{diag}(\bm{t}) \text{Stack}_n(\bm{w}^A) + \text{diag}(1 - \bm{t}) \text{Stack}_n(\bm{w}^B) &\hspace{10pt} (n \times H) \\
      \text{Layers} & \bm{X}'^{(l)} = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{RELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{j_\text{masked},:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
+     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{BERT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{j^\text{masked},:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
 \end{array}
 $$
 </div>
 
-<!-- $$ \bm{Y} =
-\begin{bmatrix}
-    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_1 \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{0.5pt} \\
-    \rule[.5ex]{8ex}{0.5pt} & P_\theta(x_2 \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{0.5pt} \\
-    & \vdots & \\
-    \rule[.5ex]{8ex}{1pt} & P_\theta(x_n \mid x_1, \ldots, x_n) & \rule[.5ex]{8ex}{1pt}
-\end{bmatrix}. $$ -->
+
+RoBERTa does not require token type IDs (due to the removal of the next sentence prediction objective) and uses $$ \texttt{[<s>]} $$, $$ \texttt{[</s>]} $$, and $$ \texttt{[<mask>]} $$ as classifier, separator, and mask tokens.
+
+
+<div class="boxed">
+$$ \textbf{RoBERTa} $$
+$$
+\begin{array}{@{}lll}
+     \text{Input} & \bm{x}' = (x'_1, \ldots, x'_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     & j^\text{masked}  \in \{1, 2, \ldots, n\} &\hspace{10pt} (1) \\
+     \text{Embedding} & \bm{X}^{(0)} = \text{OneHot}(\bm{x}') \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}'^{(l)} = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{RoBERTa}(\bm{x}) = \text{Softmax}\left( \bm{X}_{j^\text{masked},:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
+\end{array}
+$$
+</div>
+
+The training objective is to maximize the likelihood of the masked tokens conditional on the full (bidirectional) context, which corresponds to minimizing the negative log-likelihood loss given by
+
+$$
+\begin{align*}
+    \text{loss} &= - \log{P(X_{j_1} = x_{j_1}, \ldots, X_{j_m} = x_{j_m} \mid X'_1 = x'_1, \ldots, X'_n = x'_n; \bm{\theta})} \\
+    &= - \sum_{i = 1}^m \log{P(X_{j_i} = x_{j_i} \mid X'_1 = x'_1, \ldots, X'_n = x'_n; \bm{\theta})} \\
+    &= - \sum_{i = 1}^m \log\left( \text{Softmax}\left( \bm{X}_{j_i,:}^{(L)} \bm{W}_e^\top \right) \right),
+\end{align*}
+$$
+
+under the assumption that $$ X_{j_p} $$ is independent of $$ X_{j_q} $$ given $$ (X'_1 = x'_1, \ldots, X'_n = x'_n) $$. Here $$ j_1, \ldots, j_m $$ are the indices of the masked tokens.
+
+
+&nbsp;
+## Statistical interpretation
+
+
+Suppose we have a vocabulary consisting of $$ V $$ distinct tokens (e.g., words of a language, letters of an alphabet, intensities of pixels). Let $$ X_1, X_2, X_3, \ldots $$ be a seqeunce of random variables representing a sequence of tokens, where $$ X_j \in \{ 1, 2, \ldots, V \} $$ is the vocabulary ID of the $$ j $$-th token. Generative Pre-trained Transformer (GPT) is a model for the conditional distribution of $$ X_{n+1} \mid (X_1, \ldots, X_n) $$, i.e., the categorical distribution for the next token given a sequence. Bidirectional Encoder Representations from Transformers (BERT) is a model for the conditional distribution of $$ X_{j} \mid (X'_1, \ldots, X'_n) $$, i.e., the categorical distribution for the masked token given a corrupted sequence ($$ X_j' = I i^\text{mask} + (1 - I) X_j $$ where $$ I \sim \text{Bern}(p) $$ for some $$ p \in [0, 1] $$). XLNet is a model for the conditional distribution of $$ X_{z_{t+1}} \mid (X_{z_1}, \ldots, X_{z_t}) $$, i.e., the categorical distribution for the next token given the preceding tokens according to a permutation $$ (z_1, \ldots, z_{t+1}) \subseteq \{ 1, \ldots, n \}^{t+1} $$ of token positions (with $$ t < n $$).
+
+Let $$ M $$ be a set of indices indicating which tokens have been masked in the corrupted sequence $$ \bm{X}' $$, and let $$ (z_1, \ldots, z_n) $$ be a some permutation of $$ \{ 1, \ldots, n \} $$. The training objectives for the different models can then be summarized as follows:
+
+* BERT: maximize
+
+$$
+\begin{align*}
+    \log{P(\bm{X}_M = \bm{x}_M; \bm{\theta})} = \sum_{j \in M} \log{P(X_j = x_j \mid X'_1 = x'_1, \ldots, X'_n = x'_n; \bm{\theta})}.
+\end{align*}
+$$
+
+* GPT: maximize
+
+$$
+\begin{align*}
+    \log{P(\bm{X} = \bm{x}; \bm{\theta})} = \sum_{j=1}^n \log{P(X_j = x_j \mid X_1 = x_1, \ldots, X_{j-1} = x_{j-1}; \bm{\theta})}.
+\end{align*}
+$$
+
+* XLNet: maximize
+
+$$
+\begin{align*}
+    \log{P(\bm{X} = \bm{x}; \bm{\theta})} = \sum_{j=1}^n \log{P(X_{z_j} = x_{z_j} \mid X_{z_1} = x_{z_1}, \ldots, X_{z_{j-1}} = x_{z_{j-1}}; \bm{\theta})}.
+\end{align*}
+$$
 
 
 
