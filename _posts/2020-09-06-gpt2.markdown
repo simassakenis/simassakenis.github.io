@@ -48,6 +48,16 @@ $$
 </div>
 
 <div class="boxed">
+$$ \textbf{Permutation of Rows} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Perm} : \mathbb{R}^{n \times p} \times \mathcal{Z}_n \to \mathbb{R}^{n \times p}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{Perm}(\bm{X}, \bm{z})[i, j] = \bm{X}[z_i, j].
+\end{array}
+$$
+</div>
+
+<div class="boxed">
 $$ \textbf{Softmax} $$
 $$
 \begin{array}{ll}
@@ -68,12 +78,23 @@ $$
 </div>
 
 <div class="boxed">
-$$ \textbf{Autoregressive Attention Mask} $$
+$$ \textbf{Autoregressive Attention Mask (next)} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{Mask}^\text{AR} \in \mathbb{R}^{n \times n}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle (\text{Mask}^\text{AR})_{i,j} = \begin{cases} -\infty & \text{if } j > i, \\ 1 & \text{otherwise}. \end{cases} \\
-    \text{Example:} &\hspace{10pt} \displaystyle \text{For } n = 4, \text{ } \text{Mask}^\text{AR} = \begin{bmatrix} 1 & -\infty & -\infty & -\infty \\ 1 & 1 & -\infty & -\infty \\ 1 & 1 & 1 & -\infty \\ 1 & 1 & 1 & 1 \end{bmatrix}.
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Mask}_\text{next}^\text{AR} \in \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle (\text{Mask}_\text{next}^\text{AR})_{i,j} = \begin{cases} -\infty & \text{if } j > i, \\ 1 & \text{otherwise}. \end{cases} \\
+    \text{Example:} &\hspace{10pt} \displaystyle \text{For } n = 4, \text{ } \text{Mask}_\text{next}^\text{AR} = \begin{bmatrix} 1 & -\infty & -\infty & -\infty \\ 1 & 1 & -\infty & -\infty \\ 1 & 1 & 1 & -\infty \\ 1 & 1 & 1 & 1 \end{bmatrix}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Autoregressive Attention Mask (current)} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{Mask}_\text{curr}^\text{AR} \in \mathbb{R}^{n \times n}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle (\text{Mask}_\text{curr}^\text{AR})_{i,j} = \begin{cases} -\infty & \text{if } j \geq i, \\ 1 & \text{otherwise}. \end{cases} \\
+    \text{Example:} &\hspace{10pt} \displaystyle \text{For } n = 4, \text{ } \text{Mask}_\text{curr}^\text{AR} = \begin{bmatrix} -\infty & -\infty & -\infty & -\infty \\ 1 & -\infty & -\infty & -\infty \\ 1 & 1 & -\infty & -\infty \\ 1 & 1 & 1 & -\infty \end{bmatrix}.
 \end{array}
 $$
 </div>
@@ -103,9 +124,25 @@ $$
 $$ \textbf{Masked Multi-Head Self-Attention} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{MultiHeadSA} : \mathbb{R}^{n \times H} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times H}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{MultiHeadSA}(\bm{X}, \text{Mask}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \bm{W}^{O}, \quad \text{where} \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{MH} : \mathbb{R}^{n \times H} \times \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{MH}(\bm{X}, \text{Mask}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_A) \bm{W}^{O}, \quad \text{where} \\
     &\hspace{10pt} \displaystyle \text{head}_i = \text{Attention}(\bm{X} \bm{W}_i^{Q}, \bm{X} \bm{W}_i^{K}, \bm{X} \bm{W}_i^{V}, \text{Mask}). \\
+    \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
+    &\hspace{10pt} \displaystyle \bm{W}^{O} \in \mathbb{R}^{AD \times H}.
+\end{array}
+$$
+</div>
+
+<div class="boxed">
+$$ \textbf{Two-Stream Self-Attention} $$
+$$
+\begin{array}{ll}
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{TwoStreamSA} : \mathbb{R}^{n \times H} \times \mathbb{R}^{n \times H} \times \mathcal{Z}_n \to \mathbb{R}^{n \times H} \times \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{TwoStreamSA}(\bm{H}, \bm{G}, \bm{z}) = \begin{pmatrix} \text{Concat}(\text{head}_1^h, \ldots, \text{head}_A^h) \bm{W}^{O}, \\ \text{Concat}(\text{head}_1^g, \ldots, \text{head}_A^g) \bm{W}^{O} \end{pmatrix}, \text{ where} \\
+    &\hspace{10pt} \displaystyle \text{head}_i^h = \text{Attention}(\bm{H} \bm{W}_i^{Q}, \bm{H} \bm{W}_i^{K}, \bm{H} \bm{W}_i^{V}, \text{Perm}(\text{Mask}_\text{next}^\text{AR}, \bm{z})), \\
+    &\hspace{10pt} \displaystyle \text{head}_i^g = \text{Attention}(\bm{G} \bm{W}_i^{Q}, \bm{H} \bm{W}_i^{K}, \bm{H} \bm{W}_i^{V}, \text{Perm}(\text{Mask}_\text{curr}^\text{AR}, \bm{z})). \\
     \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_i^{Q} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
     &\hspace{10pt} \displaystyle \bm{W}_i^{K} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
     &\hspace{10pt} \displaystyle \bm{W}_i^{V} \in \mathbb{R}^{H \times D} \quad \text{for } i \in \{ 1, 2, \ldots, A\}, \\
@@ -118,8 +155,8 @@ $$
 $$ \textbf{Feed-Forward ReLU Network} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{ReLU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}_\text{ReLU}(\bm{X}) = \text{max}(0, \bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2. \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{FF}^\text{ReLU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{FF}^\text{ReLU}(\bm{X}) = \text{max}(0, \bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2. \\
     \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{H \times F}, \; \bm{b}_1 \in \mathbb{R}^{F}, \; \bm{W}_2 \in \mathbb{R}^{F \times H}, \; \bm{b}_2 \in \mathbb{R}^{H}.
 \end{array}
 $$
@@ -129,8 +166,8 @@ $$
 $$ \textbf{Feed-Forward GELU Network} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{FFN}_\text{GELU}(\bm{X}) = \text{GELU}(\bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2, \quad \text{where} \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{FF}^\text{GELU} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{FF}^\text{GELU}(\bm{X}) = \text{GELU}(\bm{X} \bm{W}_1 + \bm{b}_1) \bm{W}_2 + \bm{b}_2, \quad \text{where} \\
     &\hspace{10pt} \displaystyle \text{GELU}(\bm{X}) = \bm{X} \odot  \text{sigmoid}(1.702 \bm{X}), \quad \text{and} \\
     &\hspace{10pt} \displaystyle \text{sigmoid}(x) = \frac{1}{1 + e^{-x}}. \\
     \text{Parameters:} &\hspace{10pt} \displaystyle \bm{W}_1 \in \mathbb{R}^{H \times F}, \; \bm{b}_1 \in \mathbb{R}^{F}, \; \bm{W}_2 \in \mathbb{R}^{F \times H}, \; \bm{b}_2 \in \mathbb{R}^{H}.
@@ -142,8 +179,8 @@ $$
 $$ \textbf{Layer normalization} $$
 $$
 \begin{array}{ll}
-    \text{Signature:} &\hspace{10pt} \displaystyle \text{LayerNorm} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
-    \text{Definition:} &\hspace{10pt} \displaystyle \text{LayerNorm}(\bm{X})_{i,j} = \gamma_j \left( \frac{X_{i,j} - \mu_i}{\sqrt{\sigma_i^2 + \epsilon}} \right) + \beta_j, \quad \text{where} \\
+    \text{Signature:} &\hspace{10pt} \displaystyle \text{LN} : \mathbb{R}^{n \times H} \to \mathbb{R}^{n \times H}. \\
+    \text{Definition:} &\hspace{10pt} \displaystyle \text{LN}(\bm{X})_{i,j} = \gamma_j \left( \frac{X_{i,j} - \mu_i}{\sqrt{\sigma_i^2 + \epsilon}} \right) + \beta_j, \quad \text{where} \\
     &\hspace{10pt} \displaystyle \mu_i = \frac{1}{H} \sum_{j=1}^{H} X_{i,j}, \quad \sigma_i^2 = \frac{1}{H} \sum_{j=1}^{H} (X_{i,j} - \mu_i)^2. \\
     \text{Parameters:} &\hspace{10pt} \displaystyle \bm{\gamma} \in \mathbb{R}^{H}, \; \bm{\beta} \in \mathbb{R}^{H}.
 \end{array}
@@ -152,76 +189,173 @@ $$
 
 
 &nbsp;
-## Definition
+## Framework
 
-The Generative Pre-trained Transformer (GPT) is a model for next-symbol prediction. That is, it takes a sequence of symbols as input and outputs a probability distribution for the next symbol given that sequence. Each symbol is represented by a number from $$ \{ 1, 2, \ldots, V \} $$, corresponding to its ID in a pre-specified vocabulary consisting of $$ s $$ items. The input to the GPT is thus a sequence of $$ n $$ numbers $$ \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^n $$, and the output is a sequence of $$ V $$ numbers $$ \text{GPT}(\bm{x}) \in [0, 1]^{V} $$ giving the probabilities for each vocabulary item being the next symbol in the sequence. GPT can thus be defined as a function $$ \text{GPT} : \{ 1, 2, \ldots, V \}^n \to [0, 1]^{V} $$ that maps inputs to outputs by performing the following computations:
+
+Suppose we have a vocabulary consisting of $$ V $$ distinct types (e.g., words of a language, letters of an alphabet, intensities of pixels). Let $$ \ldots, X_{-2}, X_{-1}, X_0, X_1, X_2, \ldots $$ be a seqeunce of random variables representing a sequence of tokens, where $$ X_j \in \{ 1, 2, \ldots, V \} $$ is the vocabulary ID of the $$ j $$-th token. Let $$ x_j $$ denote the observed value of $$ X_j $$. The following notation will be useful:
+
+* $$ \bm{X}_J $$ denotes $$ (X_{j_1}, X_{j_2}, \ldots, X_{j_k}) $$ for any $$ J = (j_1, j_2, \ldots, j_k) $$; $$ \bm{x}_J $$ denotes $$ (x_{j_1}, x_{j_2}, \ldots, x_{j_k}) $$.
+* $$ P(\bm{x}_J) $$ denotes $$ P(\bm{X}_J = \bm{x}_J) $$; $$ P(\bm{x}_J \mid \bm{x}_M) $$ denotes $$ P(\bm{X}_J = \bm{x}_J \mid \bm{X}_M = \bm{x}_M) $$.
+* $$ i\mathord{:}j $$ denotes $$ (i, i+1, i+2, \ldots, j) $$ for any integers $$ i,j $$, with $$i\mathord{:}j $$ an empty sequence if $$ i > j $$.
+
+A **language model** is a statistical model of the conditional distribution of $$ \bm{X}_{1:n} \mid \bm{X}_{-\infty:0} $$, i.e., the conditional distribution of a sequence of $$ n $$ tokens given a (theoretically infinite) history of tokens preceding it.
+
+A **masked language model** is a statistical model of the conditional distribution of $$ \bm{X}_J \mid (\bm{X}_{1:n}', \bm{X}_{-\infty:0}) $$, where $$ \bm{X}_{1:n}' $$ is a corrupted sequence and $$ J $$ is a sequence of indices of the corrupted tokens. Specifically, $$ X_j' \equiv I_j \xi + (1 - I_j) X_j $$ where $$ I_j \sim \text{Bern}(p) $$ for some probability $$ p \in [0, 1] $$ of corruption and $$ \xi \in \{ 1, 2, \ldots, V \} $$ is the index of the corruption token (e.g., $$ \texttt{[MASK]} $$).
+
+
+&nbsp;
+## Generative Pretrained Transformer (GPT)
+
+
+**GPT** is a language model under which
+
+$$ P(\bm{x}_{1:n} \mid \bm{x}_{-\infty:0}) = \prod_{i=1}^n P(x_i \mid \bm{x}_{1:(i-1)}) \equiv \prod_{i=1}^n \text{GPT}(\bm{x}_{1:n}; \theta)[i, x_i]. $$
+
+In this model, we assume that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:0} $$. We compute the relevant probabilities via the function $$ \text{GPT} $$ which takes as input a sequence of tokens $$ \bm{x}_{1:n} $$ and outputs an $$ n \times V $$ matrix whose $$ i $$-th row is a conditional PMF of $$ X_i $$ given the preceding tokens $$ \bm{x}_{1:(i-1)} $$. This function, parameterized by $$ \theta $$, is defined as follows:
 
 <div class="boxed">
 $$ \textbf{GPT} $$
 $$
 \begin{array}{@{}lll}
      \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
-     \text{Embedding} & \bm{X}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
-     \text{Layers} & \bm{X}'^{(l)} = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}^{(l-1)}, \text{Mask}^\text{AR}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{n,:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
+     \text{Embedding} & \bm{H}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \hat{\bm{H}}{^{(l)}} = \text{LN}(\text{MH}(\bm{H}^{(l-1)}, \text{Mask}^\text{AR}) + \bm{H}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{H}^{(l)} = \text{LN}(\text{FF}^\text{GELU}(\hat{\bm{H}}{^{(l)}}) + \hat{\bm{H}}{^{(l)}}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{GPT}_\theta(\bm{x}) = \text{Softmax}\left( \bm{H}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V)
 \end{array}
 $$
 </div>
+
+The set of all parameters in the GPT is given by:
+
+$$ \theta = \{ \bm{W}_e, \bm{W}_p \} \cup \left\{ \theta_\text{MH}^{(l)}, \theta_{\text{LN},1}^{(l)}, \theta_\text{FF}^{(l)}, \theta_{\text{LN},2}^{(l)} \;\big|\; l = 1, \ldots, L \right\}, $$
+
+where $$ \bm{W}_e \in \mathbb{R}^{V \times H} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times H} $$ are the learned embedding and positional encoding matrices, and $$ \theta_\text{MH}^{(l)} $$, $$ \theta_\text{FF}^{(l)} $$, and $$ \theta_{\text{LN},i}^{(l)} $$ are the parameters of the Multi-Head Self-Attention, Feef-Forward, and Layer Normalization modules in the $$ l $$-th layer. Correspondingly, the total number of parameters in GPT is
+
+$$ N = VH + nH + L ( 4ADH + 2HF + 5H + F ). $$
+
+With $$ F = 4H $$ and $$ AD = H $$:
+
+$$ N = VH + nH + L (12 H^2 + 9H) = 12 L H^2 + (9L + V + n) H. $$
+
+In the second iteration of the model, layer normalizations were moved to the input of each sub-block instead of the output and an additional one was added before the output softmax layer:
 
 <div class="boxed">
 $$ \textbf{GPT-2} $$
 $$
 \begin{array}{@{}lll}
      \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
-     \text{Embedding} & \bm{X}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
-     \text{Layers} & \bm{X}'^{(l)} = \text{MultiHeadSA}(\text{LayerNorm}(\bm{X}^{(l-1)}), \text{Mask}^\text{AR}) + \bm{X}^{(l-1)}, &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{FFN}_\text{GELU}(\text{LayerNorm}(\bm{X}'^{(l)})) + \bm{X}'^{(l)} \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(L)} = \text{LayerNorm}(\bm{X}^{(L)}) &\hspace{10pt} (n \times H) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{n,:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
+     \text{Embedding} & \bm{H}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \hat{\bm{H}}{^{(l)}} = \text{MH}(\text{LN}(\bm{H}^{(l-1)}), \text{Mask}^\text{AR}) + \bm{H}^{(l-1)}, &\hspace{10pt} (n \times H) \\
+     & \bm{H}^{(l)} = \text{FF}^\text{GELU}(\text{LN}(\hat{\bm{H}}{^{(l)}})) + \hat{\bm{H}}{^{(l)}} \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
+     & \bm{F}^{(L)} = \text{LN}(\bm{H}^{(L)}) &\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{F}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V)
 \end{array}
 $$
 </div>
+
+In the third iteration of the model, alternating dense and sparse attention patterns were used in the attention layers:
 
 <div class="boxed">
 $$ \textbf{GPT-3} $$
 $$
 \begin{array}{@{}lll}
      \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
-     \text{Embedding} & \bm{X}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
-     \text{Layers} & \text{Mask}^{(l)} = \begin{cases} \text{Mask}^\text{AR} & \text{if } l \text{ is even}, \\ \text{Mask}^\text{ST} & \text{if } l \text{ is odd}; \end{cases} &\hspace{10pt} (n \times H) \\
-     & \bm{X}'^{(l)} = \text{MultiHeadSA}(\text{LayerNorm}(\bm{X}^{(l-1)}), \text{Mask}^{(l)}) + \bm{X}^{(l-1)}, &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{FFN}_\text{GELU}(\text{LayerNorm}(\bm{X}'^{(l)})) + \bm{X}'^{(l)} \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(L)} = \text{LayerNorm}(\bm{X}^{(L)}) &\hspace{10pt} (n \times H) \\
-     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{n,:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
+     \text{Embedding} & \bm{H}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \text{Mask}^{(l)} = \begin{cases} \text{Mask}^\text{AR} & \text{if } l \text{ is even} \\ \text{Mask}^\text{ST} & \text{if } l \text{ is odd} \end{cases} &\hspace{10pt} (n \times H) \\
+     & \hat{\bm{H}}{^{(l)}} = \text{MH}(\text{LN}(\bm{H}^{(l-1)}), \text{Mask}^{(l)}) + \bm{H}^{(l-1)}, &\hspace{10pt} (n \times H) \\
+     & \bm{H}^{(l)} = \text{FF}^\text{GELU}(\text{LN}(\hat{\bm{H}}{^{(l)}})) + \hat{\bm{H}}{^{(l)}} \quad \text{for } l = 1, \ldots, L &\hspace{10pt} (n \times H) \\
+     & \bm{F}^{(L)} = \text{LN}(\bm{H}^{(L)}) &\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{GPT}(\bm{x}) = \text{Softmax}\left( \bm{F}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V)
 \end{array}
 $$
 </div>
 
-Here, $$ \bm{W}_e \in \mathbb{R}^{V \times H} $$ and $$ \bm{W}_p \in \mathbb{R}^{n \times H} $$ are the learned embedding and positional encoding matrices, $$ \bm{X}_0 $$ is the embedding of the input sequence, and $$ \bm{X}_1, \ldots, \bm{X}_{L} $$ are the hidden layer representations of the input sequence. Also, due to autoregressive masking, we have that
+GPT-2 and GPT-3 have the same parameters, given by:
 
-$$ \text{Softmax}\left( \bm{X}^{(L)} \bm{W}_e^\top \right) =
-\begin{bmatrix}
-    \rule[.5ex]{8ex}{0.5pt} & P(X_2 \mid X_1 = x_1; \bm{\theta}) & \rule[.5ex]{8ex}{0.5pt} \\
-    \rule[.5ex]{8ex}{0.5pt} & P(X_3 \mid X_1 = x_1, X_2 = x_2; \bm{\theta}) & \rule[.5ex]{8ex}{0.5pt} \\
-    & \vdots & \\
-    \rule[.5ex]{8ex}{1pt} & P(X_{n+1} \mid X_1 = x_1, \ldots, X_n = x_n; \bm{\theta}) & \rule[.5ex]{8ex}{1pt}
-\end{bmatrix}. $$
+$$ \theta = \{ \bm{W}_e, \bm{W}_p \} \cup \left\{ \theta_\text{MH}^{(l)}, \theta_{\text{LN},1}^{(l)}, \theta_\text{FF}^{(l)}, \theta_{\text{LN},2}^{(l)} \;\big|\; l = 1, \ldots, L \right\} \cup \left\{ \theta_{\text{LN},3}^{(L)} \right\}. $$
 
-The training objective is to maximize the likelihood of observed data $$ (x_2, \ldots, x_n) $$ conditional on $$ X_1 = x_1 $$, which corresponds to minimizing the negative log-likelihood loss given by
+Hyperparameters:
 
 $$
-\begin{align*}
-    \text{loss} &= - \log{P(X_2 = x_2, \ldots, X_n = x_n \mid X_1 = x_1; \bm{\theta})} \\
-    &= - \sum_{j=2}^n \log{P(X_j = x_j \mid X_1 = x_1, \ldots, X_{j-1} = x_{j-1}; \bm{\theta})} \\
-    &= - \sum_{j=2}^n \log\left( \text{Softmax}\left( \bm{X}_{j-1,:}^{(L)} \bm{W}_e^\top \right) \right).
-\end{align*}
+\begin{array}{ c c c c c c c c c }
+    & N & L & H & F & D & A & V & n \\
+    \hline
+    \text{GPT-3 Small} & 125 \text{M} & 12 & 768 & 3072 & 64 & 12 & 50527 & 2048 \\
+    \text{GPT-3 Medium} & 350 \text{M} & 24 & 1024 & 4096 & 64 & 16 & 50527 & 2048 \\
+    \text{GPT-3 Large} & 760 \text{M} & 24 & 1536 & 6144 & 96 & 16 & 50527 & 2048 \\
+    \text{GPT-3 XL} & 1.3 \text{B} & 24 & 2048 & 8192 & 128 & 24 & 50527 & 2048 \\
+    \text{GPT-3 2.7B} & 2.7 \text{B} & 32 & 2560 & 10240 & 80 & 32 & 50527 & 2048 \\
+    \text{GPT-3 6.7B} & 6.7 \text{B} & 32 & 4096 & 16384 & 128 & 32 & 50527 & 2048 \\
+    \text{GPT-3 13.0B} & 13.0 \text{B} & 40 & 5120 & 20560 & 128 & 40 & 50527 & 2048 \\
+    \text{GPT-3 175.0B} & 175.0 \text{B} & 96 & 12288 & 49152 & 128 & 96 & 50527 & 2048 \\
+\end{array}
 $$
+
+
+&nbsp;
+## Transformer-XL
+
+**Transformer-XL** is a language model under which
+
+$$ P(\bm{x}_{1:n} \mid \bm{x}_{-\infty:0}) = \prod_{i=1}^n P(x_i \mid \bm{x}_{(i-m):(i-1)}) \equiv \prod_{i=1}^n \text{TXL}(\bm{x}_{1:n}, \bm{x}_{(-m+1):0})[i, x_i], $$
+
+where $$ m $$ is some positive integer (usually greater than $$ n $$). That is, Transformer-XL is implemented as a function that takes as input a sequence of tokens $$ \bm{x}_{1:n} $$ as well as an $$ m $$-token history $$ \bm{x}_{(-m+1):0} $$ and outputs a matrix whose $$ i $$-th row is a conditional PMF of $$ X_i $$ given $$ m $$ preceding tokens $$ \bm{x}_{(i-m):(i-1)} $$. Under this model, $$ X_j $$ is conditionally independent of $$ \bm{X}_{-\infty:(j-m-1)} $$ given $$ \bm{X}_{(j-m):(j-1)} $$.
+
+
+&nbsp;
+## XLNet
+
+**XLNet** is a language model under which:
+
+$$ P(\bm{x}_{1:n} \mid \bm{x}_{-\infty:0}) = \prod_{i=1}^n P(x_{z_i} \mid \bm{x}_{z_1:z_{i-1}}, \bm{x}_{(-m+1):0}) \equiv \prod_{i=1}^n \text{XLNet}(\bm{x}_{1:n}, \bm{x}_{(-m+1):0}, \bm{z})[z_i, x_{z_i}], $$
+
+where $$ m $$ is some positive integer and $$ \bm{z} = (z_1, \ldots, z_n) $$ is some permutation of $$ (1, \ldots, n) $$. That is, XLNet is implemented as a function that takes as input a sequence of tokens $$ \bm{x}_{1:n} $$, an $$ m $$-token history $$ \bm{x}_{(-m+1):0} $$, and a permutation $$ \bm{z} $$, and outputs a matrix whose $$ i $$-th row is a conditional PMF of $$ X_i $$ given the tokens whose IDs come before $$ i $$ in $$ \bm{z} $$ as well as the history $$ \bm{x}_{(-m+1):0} $$. Under this model, $$ X_j $$ is conditionally independent of $$ \bm{X}_{-\infty:(j-m-1)} $$ given $$ \bm{X}_{(j-m):(j-1)} $$.
+
+That is, we assume that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:-m} $$.
+
+<div class="boxed">
+$$ \textbf{XLnet} $$
+$$
+\begin{array}{@{}lll}
+     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     \text{Embedding} & \bm{H}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e &\hspace{10pt} (n \times H) \\
+     & \bm{G}^{(0)} = \text{Stack}_n(\bm{w}) &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bar{\bm{H}}{^{(l)}} = \text{MHA}_{\theta_\text{MH}^{(l)}}(\bm{H}^{(l-1)}, \bm{H}^{(l-1)}, \bm{H}^{(l-1)}, \text{Perm}(\text{Mask}_\text{next}^\text{AR}, \bm{z})), &\hspace{10pt} (n \times H) \\
+     & \hat{\bm{H}}{^{(l)}} = \text{LN}_{\theta_\text{LN,1}^{(l)}}(\bar{\bm{H}}{^{(l)}} + \bm{H}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{H}^{(l)} = \text{LN}_{\theta_\text{LN,2}^{(l)}}(\text{FF}_{\theta_\text{FF}^{(l)}}^\text{GELU}(\hat{\bm{H}}{^{(l)}}) + \hat{\bm{H}}{^{(l)}}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     & \bar{\bm{G}}{^{(l)}} = \text{MHA}_{\theta_\text{MH}^{(l)}}(\bm{G}^{(l-1)}, \bm{H}^{(l-1)}, \bm{H}^{(l-1)}, \text{Perm}(\text{Mask}_\text{curr}^\text{AR}, \bm{z})), &\hspace{10pt} (n \times H) \\
+     & \hat{\bm{G}}{^{(l)}} = \text{LN}_{\theta_\text{LN,1}^{(l)}}(\bar{\bm{G}}{^{(l)}} + \bm{G}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{G}^{(l)} = \text{LN}_{\theta_\text{LN,2}^{(l)}}(\text{FF}_{\theta_\text{FF}^{(l)}}^\text{GELU}(\hat{\bm{G}}{^{(l)}}) + \hat{\bm{G}}{^{(l)}}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{XLNet}_\theta(\bm{x}) = \text{Softmax}\left( \bm{G}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V)
+\end{array}
+$$
+</div>
+
+<!--
+<div class="boxed">
+$$ \textbf{XLnet} $$
+$$
+\begin{array}{@{}lll}
+     \text{Input} & \bm{x} = (x_1, \ldots, x_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
+     \text{Embedding} & \bm{H}^{(0)} = \text{OneHot}(\bm{x}) \bm{W}_e &\hspace{10pt} (n \times H) \\
+     & \bm{G}^{(0)} = \text{Stack}_n(\bm{w}) &\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bar{\bm{H}}{^{(l)}}, \bar{\bm{G}}{^{(l)}} = \text{TSA}(\bm{H}^{(l-1)}, \bm{G}^{(l-1)}, \bm{z}) &\hspace{10pt} (n \times H) \text{ (both)} \\
+     & \hat{\bm{H}}{^{(l)}} = \text{LN}(\text{MH}(\bm{H}^{(l-1)}, \text{Mask}^\text{AR}) + \bm{H}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{H}^{(l)} = \text{LN}(\text{FF}^\text{GELU}(\hat{\bm{H}}{^{(l)}}) + \hat{\bm{H}}{^{(l)}}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Output} & \text{GPT}_\theta(\bm{x}) = \text{Softmax}\left( \bm{H}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (n \times V)
+\end{array}
+$$
+</div> -->
+
 
 
 &nbsp;
 ## BERT
 
+* The **BERT** (**RoBERTa**) model assumes that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:0} $$ and that $$ X_{j_1}, \ldots, X_{j_k} $$ are conditionally independent given $$ \bm{X}_{1:n}' $$:
+
+$$ P_\text{BERT}(\bm{X}_{1:n} = \bm{X}_{1:n}', \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^k P(X_{j_i} \mid \bm{X}_{1:n}'; \bm{\theta}). $$
 
 Given a pair of sentences $$ \bm{x}^A = (x_1^A, \ldots, x_{n_A}^A) $$ and $$ \bm{x}^B = (x_1^B, \ldots, x_{n_B}^B) $$, and an index $$ j^\text{masked} $$ at which to mask a token, let
 
@@ -244,16 +378,14 @@ $$
      & j^\text{masked} \in \{1, 2, \ldots, n_A + n_B\} &\hspace{10pt} (1) \\
      \text{Embedding} & \bm{X}'^{(0)} = \text{OneHot}(\bm{x}') \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
      &\bm{X}^{(0)} = \bm{X}'^{(0)} + \text{diag}(\bm{t}) \text{Stack}_n(\bm{w}^A) + \text{diag}(1 - \bm{t}) \text{Stack}_n(\bm{w}^B) &\hspace{10pt} (n \times H) \\
-     \text{Layers} & \bm{X}'^{(l)} = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}'^{(l)} = \text{LN}(\text{MH}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{X}^{(l)} = \text{LN}(\text{FF}^\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
      \text{Output} & \text{BERT}(\bm{x}) = \text{Softmax}\left( \bm{X}_{j^\text{masked},:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
 \end{array}
 $$
 </div>
 
-
-RoBERTa does not require token type IDs (due to the removal of the next sentence prediction objective) and uses $$ \texttt{[<s>]} $$, $$ \texttt{[</s>]} $$, and $$ \texttt{[<mask>]} $$ as classifier, separator, and mask tokens.
-
+RoBERTa does not require token type IDs (due to the removal of the next sentence prediction objective) and uses $$ \texttt{<s>} $$, $$ \texttt{</s>} $$, and $$ \texttt{<mask>} $$ as classifier, separator, and mask tokens.
 
 <div class="boxed">
 $$ \textbf{RoBERTa} $$
@@ -262,8 +394,8 @@ $$
      \text{Input} & \bm{x}' = (x'_1, \ldots, x'_n) \in \{1, 2, \ldots, V\}^{n} &\hspace{10pt} (n) \\
      & j^\text{masked}  \in \{1, 2, \ldots, n\} &\hspace{10pt} (1) \\
      \text{Embedding} & \bm{X}^{(0)} = \text{OneHot}(\bm{x}') \bm{W}_e + \bm{W}_p &\hspace{10pt} (n \times H) \\
-     \text{Layers} & \bm{X}'^{(l)} = \text{LayerNorm}(\text{MultiHeadSA}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
-     & \bm{X}^{(l)} = \text{LayerNorm}(\text{FFN}_\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
+     \text{Layers} & \bm{X}'^{(l)} = \text{LN}(\text{MH}(\bm{X}^{(l-1)}, \text{Mask}^\text{BD}) + \bm{X}^{(l-1)}), &\hspace{10pt} (n \times H) \\
+     & \bm{X}^{(l)} = \text{LN}(\text{FF}^\text{GELU}(\bm{X}'^{(l)}) + \bm{X}'^{(l)}) \quad \text{for } l = 1, \ldots, L&\hspace{10pt} (n \times H) \\
      \text{Output} & \text{RoBERTa}(\bm{x}) = \text{Softmax}\left( \bm{X}_{j^\text{masked},:}^{(L)} \bm{W}_e^\top \right) &\hspace{10pt} (V)
 \end{array}
 $$
@@ -280,115 +412,6 @@ $$
 $$
 
 under the assumption that $$ X_{j_p} $$ is independent of $$ X_{j_q} $$ given $$ (X'_1 = x'_1, \ldots, X'_n = x'_n) $$. Here $$ j_1, \ldots, j_m $$ are the indices of the masked tokens.
-
-
-&nbsp;
-## Statistical interpretation
-
-
-Suppose we have a vocabulary consisting of $$ V $$ distinct tokens (e.g., words of a language, letters of an alphabet, intensities of pixels). Let $$ X_1, X_2, X_3, \ldots $$ be a seqeunce of random variables representing a sequence of tokens, where $$ X_j \in \{ 1, 2, \ldots, V \} $$ is the vocabulary ID of the $$ j $$-th token. Generative Pre-trained Transformer (GPT) is a model for the conditional distribution of $$ X_{n+1} \mid (X_1, \ldots, X_n) $$, i.e., the categorical distribution for the next token given a sequence. Bidirectional Encoder Representations from Transformers (BERT) is a model for the conditional distribution of $$ X_{j} \mid (X'_1, \ldots, X'_n) $$, i.e., the categorical distribution for the masked token given a corrupted sequence ($$ X_j' = I i^\text{mask} + (1 - I) X_j $$ where $$ I \sim \text{Bern}(p) $$ for some $$ p \in [0, 1] $$). XLNet is a model for the conditional distribution of $$ X_{z_{t+1}} \mid (X_{z_1}, \ldots, X_{z_t}) $$, i.e., the categorical distribution for the next token given the preceding tokens according to a permutation $$ (z_1, \ldots, z_{t+1}) \subseteq \{ 1, \ldots, n \}^{t+1} $$ of token positions (with $$ t < n $$).
-
-Let $$ M $$ be a set of indices indicating which tokens have been masked in the corrupted sequence $$ \bm{X}' $$, and let $$ (z_1, \ldots, z_n) $$ be a some permutation of $$ \{ 1, \ldots, n \} $$. The training objectives for the different models can then be summarized as follows:
-
-* BERT: maximize
-
-$$
-\begin{align*}
-    \log{P(\bm{X}_M = \bm{x}_M; \bm{\theta})} = \sum_{j \in M} \log{P(X_j = x_j \mid X'_1 = x'_1, \ldots, X'_n = x'_n; \bm{\theta})}.
-\end{align*}
-$$
-
-* GPT: maximize
-
-$$
-\begin{align*}
-    \log{P(\bm{X} = \bm{x}; \bm{\theta})} = \sum_{j=1}^n \log{P(X_j = x_j \mid X_1 = x_1, \ldots, X_{j-1} = x_{j-1}; \bm{\theta})}.
-\end{align*}
-$$
-
-* XLNet: maximize
-
-$$
-\begin{align*}
-    \log{P(\bm{X} = \bm{x}; \bm{\theta})} = \sum_{j=1}^n \log{P(X_{z_j} = x_{z_j} \mid X_{z_1} = x_{z_1}, \ldots, X_{z_{j-1}} = x_{z_{j-1}}; \bm{\theta})}.
-\end{align*}
-$$
-
-
-&nbsp;
-## Statistical interpretation 2
-
-
-Suppose we have a vocabulary consisting of $$ V $$ distinct types (e.g., words of a language, letters of an alphabet, intensities of pixels). Let $$ \ldots, X_{-2}, X_{-1}, X_0, X_1, X_2, \ldots $$ be a seqeunce of random variables representing a sequence of tokens, where $$ X_j \in \{ 1, 2, \ldots, V \} $$ is the vocabulary ID of the $$ j $$-th token. If $$ J = (j_1, j_2, \ldots, j_k) $$ is a sequence of indices, let $$ \bm{X}_J $$ denote $$ (X_{j_1}, X_{j_2}, \ldots, X_{j_k}) $$. Also, let $$ \bm{X}_{i:j} $$ denote $$ (X_i, X_{i+1}, X_{i+2} \ldots, X_j) $$ for any integers $$ i,j $$, with $$ \bm{X}_{i:j} $$ an empty sequence if $$ i > j $$.
-
-A language model is a statistical model of the conditional distribution of $$ \bm{X}_{1:n} \mid \bm{X}_{-\infty:0} $$, i.e., the probability distribution of a sequence of $$ n $$ tokens given a (theoretically infinite) history of tokens preceding it.
-
-<!-- An autoregressive language model is a language model based on the following factorization of the probability of a sequence:
-
-$$ P_\text{AR}(\bm{X}_{1:n} \mid \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^n P_\text{AR}(\bm{X}_{1:i} \mid \bm{X}_{1:i-1}, \bm{X}_{-\infty:0}; \bm{\theta}). $$ -->
-
-* The **GPT** model assumes that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:0} $$:
-
-$$ P_\text{GPT}(\bm{X}_{1:n} \mid \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^n P_\text{GPT}(\bm{X}_i \mid \bm{X}_{1:(i-1)}; \bm{\theta}). $$
-
-* The **Transformer-XL** model assumes that $$ X_j $$ is independent of $$ \bm{X}_{-\infty:(j-m-1)} $$:
-
-$$ P_\text{TXL}(\bm{X}_{1:n} \mid \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^n P_\text{TXL}(\bm{X}_i \mid \bm{X}_{(i-m):(i-1)}; \bm{\theta}). $$
-
-* The **XLNet** model assumes that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:-m} $$:
-
-$$ P_\text{XLNet}(\bm{X}_{1:n} \mid \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^n P_\text{XLNet}(\bm{X}_{z_i} \mid \bm{X}_{z_1:z_{i-1}}, \bm{X}_{(-m+1):0}; \bm{\theta}). $$
-
-A masked language model is a statistical model of the conditional distribution of $$ \bm{X}_J \mid (\bm{X}_{1:n}', \bm{X}_{-\infty:0}) $$, where $$ \bm{X}_{1:n}' $$ is a corrupted sequence and $$ J $$ is a sequence of indices of the corrupted tokens. Specifically, $$ X_j' = I \xi + (1 - I) X_j $$ where $$ I \sim \text{Bern}(p) $$ for some probability $$ p \in [0, 1] $$ of corruption and $$ \xi \in \{ 1, 2, \ldots, V \} $$ is the index of the corruption token.
-
-* The **BERT** (**RoBERTa**) model assumes that $$ \bm{X}_{1:n} $$ is independent of $$ \bm{X}_{-\infty:0} $$ and that $$ X_{j_1}, \ldots, X_{j_k} $$ are conditionally independent given $$ \bm{X}_{1:n}' $$:
-
-$$ P_\text{BERT}(\bm{X}_{1:n} = \bm{X}_{1:n}', \bm{X}_{-\infty:0}; \bm{\theta}) = \prod_{i=1}^k P(X_{j_i} \mid \bm{X}_{1:n}'; \bm{\theta}). $$
-
-
-&nbsp;
-## Statistical interpretation 3
-
-
-Suppose we have a vocabulary consisting of $$ V $$ distinct types (e.g., words of a language, letters of an alphabet, intensities of pixels). Let $$ \bm{X} = (X_1, X_2, \ldots, X_T) $$ be a seqeunce of random variables representing a sequence of tokens, where $$ X_j \in \{ 1, 2, \ldots, V \} $$ is the vocabulary ID of the $$ j $$-th token. If $$ J = (j_1, j_2, \ldots, j_k) $$ is a sequence of indices, let $$ \bm{X}_J $$ denote $$ (X_{j_1}, X_{j_2}, \ldots, X_{j_k}) $$. Also, let $$ \bm{X}_{i:j} $$ denote $$ (X_i, X_{i+1}, X_{i+2} \ldots, X_j) $$ for any integers $$ i,j $$, with $$ \bm{X}_{i:j} $$ an empty sequence if $$ i > j $$.
-
-A language model is a statistical model of distribution of $$ \bm{X} $$.
-
-* GPT:
-
-$$ P_\text{GPT}(\bm{X}; \bm{\theta}) = \prod_{i=1}^{T / n} P_\text{GPT}(\bm{X}_{in:(i+1)n}; \bm{\theta}). $$
-
-* Transformer-XL:
-
-$$ P_\text{TXL}(\bm{X}; \bm{\theta}) = \prod_{i=1}^{T / n} P_\text{TXL}(\bm{X}_{in:(i+1)n} \mid \bm{X}_{(in-m):(in-1)}; \bm{\theta}). $$
-
-
-
-&nbsp;
-## Parameters
-
-
-The set of all parameters in the GPT is given by:
-
-$$
-\begin{align*}
-    \theta = \; &\{ \bm{W}_e, \bm{W}_p \} & \text{embeddings} \\
-    &\cup \bigcup_{l=1}^{L} \left\{ \bm{W}_{i,l}^Q, \bm{W}_{i,l}^K, \bm{W}_{i,l}^V, \bm{W}_l^O \;\middle|\; i \in \{1, 2, \ldots, A\} \right\} & \text{MultiHeadSAs} \\
-    &\cup \bigcup_{l=1}^{L} \{ \bm{W}_{1,l}, \bm{b}_{1,l}, \bm{W}_{2,l}, \bm{b}_{2,l} \} & \text{FFNets} \\
-    &\cup \bigcup_{l=1}^{L} \{ \bm{\gamma}_l, \bm{\beta}_l, \bm{\gamma}_l', \bm{\beta}_l' \} & \text{LayerNorms}.
-\end{align*}
-$$
-
-Correspondingly, the total number of parameters in the Transformer is
-
-$$
-\begin{align*}
-    \lambda = &\; V \cdot H + n \cdot H & \text{embeddings} \\
-    &+ L \cdot ( A\cdot (H \cdot D + H \cdot D + H \cdot D) + AD \cdot H ) & \text{MultiHeadSAs} \\
-    &+ L \cdot ( H \cdot F + F + F \cdot H + H ) & \text{FFNets} \\
-    &+ L \cdot ( H + H + H + H ). & \text{LayerNorms}
-\end{align*}
-$$
 
 
 &nbsp;
@@ -416,12 +439,12 @@ Hyperparameter values (used in the paper):
 
 $$
 \begin{align*}
+    & L = 12 & \text{number of layers} \\
     & H = 768 & \text{dimension of the residual stream} \\
     & F = 3072 & \text{dimension of the hidden layer in feed-forward nets} \\
     & D = 64 & \text{dimension of the vector space for queries, keys, and values} \\
-    & L = 12 & \text{number of layers} \\
     & A = 12 & \text{number of heads in multihead attention} \\
-    & V = 40\,478 & \text{number of items in the vocabulary} \\
+    & V = 40\,478 & \text{number of types in the vocabulary} \\
     & n_\text{ctx} = 512 & \text{context size}
 \end{align*}
 $$
